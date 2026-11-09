@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>উজ্জ্বল গ্যাজেট জোন</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--pink:#e2136e;--pink2:#ff4f9a;--soft:rgba(255,255,255,.72);--line:rgba(255,255,255,.25)}
+  *{box-sizing:border-box}
+  body{margin:0;padding:10px;font-family:'Hind Siliguri',system-ui,sans-serif;color:#fff;background:#14031f;min-height:100vh;overflow-x:hidden}
+  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:radial-gradient(circle at 20% 10%,#4a0a52,#14031f 60%)}
+  .bg i{position:absolute;border-radius:50%;filter:blur(60px);opacity:.8;animation:float 18s ease-in-out infinite}
+  .bg i:nth-child(1){width:46vmax;height:46vmax;background:#e2136e;left:-10vmax;top:-8vmax}
+  .bg i:nth-child(2){width:38vmax;height:38vmax;background:#7b2ff7;right:-8vmax;top:20vh;animation-delay:-6s}
+  .bg i:nth-child(3){width:34vmax;height:34vmax;background:#00c6ff;left:25vw;bottom:-14vmax;animation-delay:-11s}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(8vw,6vh) scale(1.15)}66%{transform:translate(-6vw,10vh) scale(.9)}}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .box{max-width:1000px;margin:0 auto 14px;padding:16px;border-radius:24px;background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.05));border:1px solid var(--line);box-shadow:inset 0 1px 1px rgba(255,255,255,.6),0 18px 40px rgba(0,0,0,.3);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);animation:rise .5s ease both}
+  h3{margin:4px 0 12px}
+  label{display:block;font-size:13px;color:var(--soft);margin:8px 0 4px}
+  input,select{width:100%;padding:10px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.12);color:#fff;font:inherit;font-size:15px}
+  select option{color:#222}
+  input::placeholder{color:rgba(255,255,255,.5)}
+  input:focus,select:focus{outline:none;border-color:#fff;background:rgba(255,255,255,.2)}
+  button{border:1px solid rgba(255,255,255,.4);border-radius:14px;padding:9px 14px;margin:6px 6px 0 0;background:linear-gradient(135deg,var(--pink),var(--pink2));color:#fff;font:inherit;font-size:14px;cursor:pointer;box-shadow:0 8px 20px rgba(226,19,110,.35);transition:transform .15s}
+  button:hover{transform:translateY(-2px)}
+  button.light{background:rgba(255,255,255,.14);box-shadow:none;border-color:var(--line)}
+  button.on{background:linear-gradient(135deg,#01babd,#00d4aa)}
+  button.red{background:linear-gradient(135deg,#ff5a5a,#c81e3c)}
+  button.green{background:linear-gradient(135deg,#01babd,#00d4aa)}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:12px}
+  .stat{padding:12px;border-radius:18px;background:rgba(255,255,255,.08);border:1px solid var(--line);animation:rise .5s ease both}
+  .stat small{color:var(--soft)}
+  .stat b{display:block;font-size:22px;margin-top:4px}
+  .good{color:#7dffb3}
+  .err{color:#ff8fa3}
+  .sub{color:var(--soft);font-size:13px}
+  .sticky{position:sticky;top:0;z-index:10;margin:-10px -10px 14px;background:rgba(20,3,31,.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;font-size:18px;font-weight:700}
+  .menu{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px}
+  .menu button{margin:0}
+  .bar{height:12px;border-radius:99px;background:rgba(255,255,255,.15);overflow:hidden;margin-top:6px}
+  .bar span{display:block;height:100%;background:linear-gradient(90deg,#01babd,#00d4aa);transition:width .8s}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.12);font-size:13px}
+  .wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  th{color:var(--soft);font-size:13px;text-align:left;padding:8px;border-bottom:1px solid rgba(255,255,255,.2);white-space:nowrap}
+  td{padding:8px;border-bottom:1px solid rgba(255,255,255,.1);white-space:nowrap}
+  tbody tr:hover{background:rgba(255,255,255,.07)}
+  td select{width:auto;padding:6px}
+  .profit{color:#7dffb3}
+  .hidden{display:none !important}
+  .mhead{text-align:center;padding:24px 10px 4px}
+  .mhead h1{margin:0;font-size:28px}
+  .mhead p{color:var(--soft);margin:6px 0 0}
+  .shutters{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1000px;margin:18px auto;padding:0 10px}
+  .shop{position:relative;height:260px;margin:0;padding:0;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,#24103a,#0d0618);color:#fff;text-align:left;box-shadow:0 18px 40px rgba(0,0,0,.4);cursor:pointer}
+  .shop:hover{transform:translateY(-4px)}
+  .shop .inside{position:absolute;left:18px;right:18px;bottom:18px;z-index:1}
+  .shop .inside small{display:block;color:var(--soft);font-size:14px;margin-bottom:4px}
+  .shop .inside em{font-style:normal;font-size:13px;color:#7dffb3}
+  .shop .roll{position:absolute;left:0;right:0;top:0;bottom:0;z-index:3;background:repeating-linear-gradient(0deg,#5a5a64 0 14px,#34343c 14px 18px);transition:transform .75s cubic-bezier(.6,0,.3,1)}
+  .shop.up .roll{transform:translateY(-102%)}
+  .shop .sign{position:absolute;left:0;right:0;top:0;z-index:4;padding:16px;font-size:18px;font-weight:700;background:var(--c);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+
+<div id="loginBox" class="box" style="max-width:380px">
+  <h3>লগ ইন করুন</h3>
+  <input id="email" type="email" placeholder="ইমেইল">
+  <input id="password" type="password" placeholder="পাসওয়ার্ড" style="margin-top:8px">
+  <button id="loginBtn">লগ ইন</button>
+  <p id="loginMsg" class="err"></p>
+</div>
+
+<div id="market" class="hidden">
+  <div class="mhead"><h1>উজ্জ্বল মার্কেট</h1><p>শাটারে ক্লিক করে দোকানে ঢুকুন</p></div>
+  <div class="shutters" id="shutters"></div>
+</div>
+
+<div id="appBox" class="hidden">
+  <div class="sticky">
+    <div class="topbar"><button data-act="market" class="light">← মার্কেট</button><span>উজ্জ্বল গ্যাজেট জোন</span><button id="logoutBtn" class="red">লগ আউট</button></div>
+    <div class="menu" id="shopBtns"></div>
+    <div class="menu" id="sectorBtns" style="background:rgba(255,255,255,.05)"></div>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+  const sb = createClient("https://fvxapnnbkhtvgwzthrsf.supabase.co", "sb_publishable_oj6orwGEGlo5bwHB4whaSg_xo6FzsaT");
+
+  // DUMMY: দোকান ও সেক্টরের ভাগ অস্থায়ী। পরে ঠিক করা হবে।
+  const SHOPS = [
+    { key: "telecom",  name: "উজ্জ্বল টেলিকম",      sectors: ["bkash", "flexi", "sim", "card"] },
+    { key: "gadget",   name: "উজ্জ্বল গ্যাজেট জোন", sectors: ["service", "accessory", "mobile", "gadget"] },
+    { key: "personal", name: "পার্সোনাল",           sectors: ["bkash_personal"] }
+  ];
+  // [নাম, স্টক আছে কিনা]
+  const SECTOR_INFO = {
+    service: ["মোবাইল সার্ভিসিং", false], bkash: ["বিকাশ (উজ্জ্বল টেলিকম)", false],
+    bkash_personal: ["বিকাশ (পার্সোনাল)", false], flexi: ["ফ্লেক্সি লোড", false],
+    sim: ["সিম", true], card: ["মিনিট / এমবি কার্ড", true], accessory: ["মোবাইল অ্যাক্সেসরিজ", true],
+    mobile: ["মোবাইল", true], gadget: ["গ্যাজেট", true]
+  };
+  const STATUSES = ["রিসিভ করা", "পরীক্ষা চলছে", "পার্টসের অপেক্ষায়", "সার্ভিসিং চলছে", "ডেলিভারির জন্য প্রস্তুত", "ডেলিভারি সম্পন্ন", "বাতিল"];
+  const KIND_NAME = { send: "সেন্ড মানি", cashout: "ক্যাশ আউট", cashin: "ক্যাশ ইন" };
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const bn = n => Math.round(Number(n) || 0).toLocaleString("bn-BD");
+  const today = () => new Date().toLocaleDateString("en-CA");
+  const secName = k => SECTOR_INFO[k][0];
+  const isStock = k => SECTOR_INFO[k][1];
+  const shopOf = k => SHOPS.find(s => s.sectors.includes(k));
+  const isBk = k => k === "bkash" || k === "bkash_personal";
+  const scopeOf = k => k === "bkash_personal" ? "personal" : "bkash";
+  const dueOf = j => Math.max(0, Number(j.estimate) - Number(j.discount || 0) - Number(j.advance || 0));
+  const sumOf = (arr, f) => arr.reduce((s, x) => s + (Number(f(x)) || 0), 0);
+  const stat = (l, v, c = "") => `<div class="stat"><small>${l}</small><b class="${c}">${v}</b></div>`;
+
+  let cur = "bkash";
+  let gDate = today();
+  let S = {}, bk = [], jobs = [], products = [], entries = [];
+
+  // ---------- লগ ইন ----------
+  $("loginBtn").onclick = async () => {
+    $("loginMsg").textContent = "";
+    const { error } = await sb.auth.signInWithPassword({ email: $("email").value.trim(), password: $("password").value });
+    if (error) $("loginMsg").textContent = "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে";
+    else showApp();
+  };
+  $("logoutBtn").onclick = async () => { await sb.auth.signOut(); showLogin(); };
+  function showLogin() { $("appBox").classList.add("hidden"); $("market").classList.add("hidden"); $("loginBox").classList.remove("hidden"); }
+  function showApp() { $("loginBox").classList.add("hidden"); buildMarket(); showMarket(); loadAll(); }
+
+  // ---------- মার্কেট ও শাটার ----------
+  const MARKET = [
+    { key: "telecom", icon: "📱", cat: "টেলিকম ও বিকাশ সেন্টার", color: "#e2136e" },
+    { key: "gadget", icon: "🔧", cat: "ইলেকট্রনিক্স ও সার্ভিসিং", color: "#7b2ff7" },
+    { key: "personal", icon: "💳", cat: "পার্সোনাল ব্যাংকিং", color: "#01babd" }
+  ];
+  function buildMarket() {
+    $("shutters").innerHTML = MARKET.map(m => {
+      const s = SHOPS.find(x => x.key === m.key);
+      return `<button class="shop" data-act="openShutter" data-v="${m.key}" style="--c:${m.color}">
+        <span class="roll"></span>
+        <span class="sign">${m.icon} ${s.name}</span>
+        <span class="inside"><small>${m.cat}</small><em>${s.sectors.length}টি সেক্টর</em></span>
+      </button>`;
+    }).join("");
+  }
+  function showMarket() {
+    $("appBox").classList.add("hidden");
+    $("market").classList.remove("hidden");
+    window.scrollTo(0, 0);
+  }
+  function openShop() {
+    $("market").classList.add("hidden");
+    $("appBox").classList.remove("hidden");
+    window.scrollTo(0, 0);
+    render();
+  }
+
+  // ---------- ডাটা ----------
+  async function loadAll() {
+    const [st, tx, jb, pr, en] = await Promise.all([
+      sb.from("settings").select("*"),
+      sb.from("bkash_tx").select("*").order("tx_date"),
+      sb.from("jobs").select("*").order("created_at"),
+      sb.from("products").select("*").order("name"),
+      sb.from("entries").select("*").eq("entry_date", gDate).order("created_at")
+    ]);
+    const bad = [st, tx, jb, pr, en].find(r => r.error);
+    if (bad) return alert("ডাটা আনা যায়নি: " + bad.error.message);
+    S = {};
+    st.data.forEach(r => S[r.key] = Number(r.value));
+    bk = tx.data; jobs = jb.data; products = pr.data; entries = en.data;
+    render();
+  }
+
+  // ---------- মেনু ও ভিউ ----------
+  function render() {
+    buildMenus();
+    const v = $("view");
+    if (isBk(cur)) bkView(v);
+    else if (cur === "service") jobsView(v);
+    else genView(v);
+  }
+
+  function buildMenus() {
+    const shop = shopOf(cur);
+    $("shopBtns").innerHTML = SHOPS.map(s => `<button data-act="shop" data-v="${s.key}" class="${s.key === shop.key ? "on" : "light"}">${s.name}</button>`).join("");
+    $("sectorBtns").innerHTML = shop.sectors.map(k => `<button data-act="sector" data-v="${k}" class="${k === cur ? "on" : "light"}">${secName(k)}</button>`).join("");
+  }
+
+  // ---------- বিকাশ ড্যাশবোর্ড ----------
+  function bkStats(scope) {
+    const list = bk.filter(x => x.scope === scope), t = today(), ym = t.slice(0, 7);
+    const inSum = sumOf(list.filter(x => x.kind === "cashin"), x => x.amount);
+    const outSum = sumOf(list.filter(x => x.kind !== "cashin"), x => x.amount);
+    const todayL = list.filter(x => x.tx_date === t);
+    return {
+      balance: (S["open_" + scope] || 0) + inSum - outSum,
+      month: sumOf(list.filter(x => x.kind !== "cashin" && x.tx_date.startsWith(ym)), x => x.amount),
+      send: sumOf(todayL.filter(x => x.kind === "send"), x => x.amount),
+      cash: sumOf(todayL.filter(x => x.kind === "cashout"), x => x.amount),
+      comm: sumOf(todayL, x => x.charge),
+      todayL,
+      limit: S["limit_" + scope] || 300000
+    };
+  }
+
+  function bkView(v) {
+    const sc = scopeOf(cur), s = bkStats(sc), pct = Math.min(100, Math.round(s.month / s.limit * 100) || 0);
+    v.innerHTML = `
+    <div class="box"><h3>${secName(cur)}</h3>
+      <div class="grid">
+        ${stat("ব্যালেন্স", bn(s.balance) + " ৳")}
+        ${stat("আজকের সেন্ড মানি", bn(s.send) + " ৳")}
+        ${stat("আজকের ক্যাশ আউট", bn(s.cash) + " ৳")}
+        ${stat("আজকের চার্জ / কমিশন", bn(s.comm) + " ৳", "good")}
+      </div>
+      <div>মাসিক ব্যবহার: <b>${bn(s.month)} ৳</b> / ${bn(s.limit)} ৳ (${bn(pct)}%)</div>
+      <div class="bar"><span style="width:${pct}%"></span></div>
+    </div>
+    <div class="box"><h3>নতুন লেনদেন</h3>
+      <div class="row">
+        <div><label>ধরন</label><select id="tKind">${Object.entries(KIND_NAME).map(([k, n]) => `<option value="${k}">${n}</option>`).join("")}</select></div>
+        <div><label>পরিমাণ (৳)</label><input id="tAmt" type="number"></div>
+        <div><label>চার্জ / কমিশন (৳)</label><input id="tChg" type="number"></div>
+        <div><label>মন্তব্য</label><input id="tNote" placeholder="নাম / নম্বর"></div>
+        <div><label>তারিখ</label><input id="tDate" type="date" value="${today()}"></div>
+      </div>
+      <button data-act="bkSave" data-v="${sc}">লেনদেন সেভ করুন</button>
+    </div>
+    <div class="box"><h3>ব্যালেন্স ও লিমিট সেট করুন</h3>
+      <div class="row">
+        <div><label>এখন ব্যালেন্সে যত টাকা আছে</label><input id="balSet" type="number"></div>
+        <div><label>মাসিক লিমিট (৳)</label><input id="limSet" type="number" value="${s.limit}"></div>
+      </div>
+      <button data-act="bkBal" data-v="${sc}">ব্যালেন্স সেভ করুন</button>
+      <button data-act="bkLim" data-v="${sc}" class="light">লিমিট সেভ করুন</button>
+    </div>
+    <div class="box"><h3>আজকের লেনদেন</h3><div class="wrap"><table>
+      <thead><tr><th>ধরন</th><th>পরিমাণ</th><th>চার্জ</th><th>মন্তব্য</th><th></th></tr></thead>
+      <tbody>${s.todayL.map(x => `<tr><td>${KIND_NAME[x.kind]}</td><td>${bn(x.amount)}</td><td>${bn(x.charge)}</td><td>${esc(x.note)}</td><td><button class="red" data-act="bkDel" data-id="${x.id}">মুছুন</button></td></tr>`).join("") || `<tr><td colspan="5">আজ কোনো লেনদেন নেই</td></tr>`}</tbody>
+    </table></div></div>`;
+  }
+
+  // ---------- সার্ভিসিং জব ----------
+  function jobsView(v) {
+    const due = jobs.filter(j => j.status !== "বাতিল" && dueOf(j) > 0);
+    v.innerHTML = `
+    <div class="box"><h3>নতুন সার্ভিসিং জব</h3>
+      <div class="row">
+        <div><label>কাস্টমারের নাম</label><input id="jCust"></div>
+        <div><label>মোবাইল নম্বর</label><input id="jPhone" type="tel"></div>
+        <div><label>মডেল</label><input id="jModel" placeholder="যেমন: Samsung A15"></div>
+        <div><label>সমস্যা</label><input id="jProb"></div>
+        <div><label>স্ট্যাটাস</label><select id="jStatus">${STATUSES.map(s => `<option>${s}</option>`).join("")}</select></div>
+        <div><label>মোট বিল (৳)</label><input id="jEst" type="number"></div>
+        <div><label>অগ্রিম জমা (৳)</label><input id="jAdv" type="number"></div>
+      </div>
+      <button data-act="jobSave">জব সেভ করুন</button>
+    </div>
+    <div class="box"><h3>স্ট্যাটাস অনুযায়ী</h3><div class="chips">${STATUSES.map(s => `<span class="chip">${s}: <b>${bn(jobs.filter(j => j.status === s).length)}</b></span>`).join("")}</div></div>
+    <div class="box"><h3>বাকি তালিকা (মোট ${bn(sumOf(due, dueOf))} ৳)</h3><div class="wrap"><table>
+      <thead><tr><th>কাস্টমার</th><th>মোবাইল</th><th>মডেল</th><th>বিল</th><th>জমা</th><th>বাকি</th><th></th></tr></thead>
+      <tbody>${due.map(j => `<tr><td>${esc(j.customer)}</td><td>${esc(j.phone)}</td><td>${esc(j.model)}</td><td>${bn(j.estimate)}</td><td>${bn(j.advance)}</td><td class="err">${bn(dueOf(j))}</td><td><button class="green" data-act="jobCollect" data-id="${j.id}">জমা নিন</button></td></tr>`).join("") || `<tr><td colspan="7">কোনো বাকি নেই</td></tr>`}</tbody>
+    </table></div></div>
+    <div class="box"><h3>সব জব</h3><div class="wrap"><table>
+      <thead><tr><th>নং</th><th>কাস্টমার</th><th>মডেল</th><th>স্ট্যাটাস</th><th>বিল</th><th>জমা</th><th>বাকি</th><th></th></tr></thead>
+      <tbody>${[...jobs].reverse().map(j => `<tr><td>${esc(j.job_no)}</td><td>${esc(j.customer)}</td><td>${esc(j.model)}</td>
+        <td><select data-act="jobStatus" data-id="${j.id}">${STATUSES.map(s => `<option ${s === j.status ? "selected" : ""}>${s}</option>`).join("")}</select></td>
+        <td>${bn(j.estimate)}</td><td>${bn(j.advance)}</td><td>${bn(dueOf(j))}</td>
+        <td>${j.status === "ডেলিভারি সম্পন্ন" ? "" : `<button class="green" data-act="jobDeliver" data-id="${j.id}">ডেলিভারি</button>`}<button class="red" data-act="jobDel" data-id="${j.id}">মুছুন</button></td></tr>`).join("") || `<tr><td colspan="8">এখনো কোনো জব নেই</td></tr>`}</tbody>
+    </table></div></div>`;
+  }
+
+  // ---------- সাধারণ সেক্টর (এন্ট্রি ও স্টক) ----------
+  function genView(v) {
+    const k = cur, stock = isStock(k);
+    const list = entries.filter(x => x.sector === k), plist = products.filter(p => p.sector === k);
+    v.innerHTML = `
+    <div class="box"><div class="row"><div><label>তারিখ</label><input id="gDate" type="date" value="${gDate}" data-act="setGDate"></div></div></div>
+    <div class="box"><h3>${secName(k)} — নতুন এন্ট্রি</h3>
+      <div class="row">
+        ${stock ? `<div><label>স্টক থেকে পণ্য</label><select id="gProd" data-act="genPick"><option value="">— ম্যানুয়াল —</option>${plist.map(p => `<option value="${p.id}">${esc(p.name)} (স্টক ${bn(p.qty)})</option>`).join("")}</select></div>` : ""}
+        <div><label>বিবরণ</label><input id="gName"></div>
+        <div><label>পরিমাণ</label><input id="gQty" type="number" value="1"></div>
+        <div><label>আয় / বিক্রি (৳)</label><input id="gSell" type="number"></div>
+        <div><label>খরচ / ক্রয় (৳)</label><input id="gBuy" type="number"></div>
+        <div><label>মন্তব্য</label><input id="gNote"></div>
+      </div>
+      <button data-act="genSave">এন্ট্রি সেভ করুন</button>
+      <div class="wrap"><table>
+        <thead><tr><th>বিবরণ</th><th>পরিমাণ</th><th>আয়</th><th>খরচ</th><th>লাভ</th><th>মন্তব্য</th><th></th></tr></thead>
+        <tbody>${list.map(x => `<tr><td>${esc(x.item_name)}</td><td>${bn(x.qty)}</td><td>${bn(x.sell_total)}</td><td>${bn(x.buy_total)}</td><td class="profit">${bn(x.sell_total - x.buy_total)}</td><td>${esc(x.note)}</td><td><button class="red" data-act="genDel" data-id="${x.id}">মুছুন</button></td></tr>`).join("") || `<tr><td colspan="7">এই তারিখে কোনো এন্ট্রি নেই</td></tr>`}</tbody>
+      </table></div>
+    </div>
+    ${stock ? `<div class="box"><h3>স্টক</h3>
+      <div class="row">
+        <div><label>পণ্যের নাম</label><input id="pName"></div>
+        <div><label>স্টক সংখ্যা</label><input id="pQty" type="number"></div>
+        <div><label>ক্রয়মূল্য (প্রতি পিস)</label><input id="pBuy" type="number"></div>
+        <div><label>বিক্রয়মূল্য (প্রতি পিস)</label><input id="pSell" type="number"></div>
+      </div>
+      <button data-act="prodAdd">পণ্য যোগ করুন</button>
+      <div class="wrap"><table>
+        <thead><tr><th>পণ্য</th><th>স্টক</th><th>ক্রয়মূল্য</th><th>বিক্রয়মূল্য</th><th></th></tr></thead>
+        <tbody>${plist.map(p => `<tr><td>${esc(p.name)}</td><td>${bn(p.qty)}</td><td>${bn(p.buy_price)}</td><td>${bn(p.sell_price)}</td><td><button class="green" data-act="prodIn" data-id="${p.id}">+ স্টক</button><button class="red" data-act="prodDel" data-id="${p.id}">মুছুন</button></td></tr>`).join("") || `<tr><td colspan="5">এখনো কোনো পণ্য নেই</td></tr>`}</tbody>
+      </table></div>
+    </div>` : ""}`;
+  }
+
+  // ---------- অ্যাকশন ----------
+  const actions = {
+    shop(el) { cur = SHOPS.find(s => s.key === el.dataset.v).sectors[0]; openShop(); },
+    market() { showMarket(); },
+    openShutter(el) { el.classList.add("up"); setTimeout(() => actions.shop(el), 750); },
+    sector(el) { cur = el.dataset.v; render(); },
+
+    async bkSave(el) {
+      const amt = Number($("tAmt").value);
+      if (!(amt > 0)) return alert("পরিমাণ লিখুন");
+      const { error } = await sb.from("bkash_tx").insert({
+        tx_date: $("tDate").value || today(), scope: el.dataset.v, kind: $("tKind").value,
+        amount: amt, charge: Number($("tChg").value) || 0, note: $("tNote").value.trim() || null
+      });
+      if (error) return alert("সেভ হয়নি: " + error.message);
+      loadAll();
+    },
+    async bkDel(el) {
+      if (!confirm("লেনদেনটি মুছবেন?")) return;
+      const { error } = await sb.from("bkash_tx").delete().eq("id", el.dataset.id);
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async bkBal(el) {
+      if ($("balSet").value === "") return alert("ব্যালেন্সের পরিমাণ লিখুন");
+      const sc = el.dataset.v, target = Number($("balSet").value), list = bk.filter(x => x.scope === sc);
+      const effect = sumOf(list.filter(x => x.kind === "cashin"), x => x.amount) - sumOf(list.filter(x => x.kind !== "cashin"), x => x.amount);
+      const { error } = await sb.from("settings").upsert({ key: "open_" + sc, value: target - effect });
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async bkLim(el) {
+      const { error } = await sb.from("settings").upsert({ key: "limit_" + el.dataset.v, value: Number($("limSet").value) || 300000 });
+      if (error) return alert(error.message);
+      loadAll();
+    },
+
+    async jobSave() {
+      const cust = $("jCust").value.trim();
+      if (!cust) return alert("কাস্টমারের নাম লিখুন");
+      const nums = jobs.map(j => parseInt(String(j.job_no).replace(/\D/g, "")) || 0);
+      const no = "JOB-" + String(Math.max(0, ...nums) + 1).padStart(4, "0");
+      const { error } = await sb.from("jobs").insert({
+        job_date: today(), job_no: no, customer: cust, phone: $("jPhone").value.trim(),
+        model: $("jModel").value.trim(), problem: $("jProb").value.trim(), status: $("jStatus").value,
+        estimate: Number($("jEst").value) || 0, advance: Number($("jAdv").value) || 0
+      });
+      if (error) return alert("সেভ হয়নি: " + error.message);
+      loadAll();
+    },
+    async jobStatus(el) {
+      const { error } = await sb.from("jobs").update({ status: el.value }).eq("id", el.dataset.id);
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async jobDeliver(el) {
+      const j = jobs.find(x => String(x.id) === el.dataset.id);
+      if (!j) return;
+      const d = prompt("ছাড় (৳)", "0");
+      if (d === null) return;
+      const disc = Math.max(0, Number(d) || 0);
+      const net = Math.max(0, Number(j.estimate) - disc);
+      const rem = Math.max(0, net - Number(j.advance));
+      const r = prompt("এখন কত টাকা নিলেন?", String(rem));
+      if (r === null) return;
+      const adv = Math.min(net, Number(j.advance) + Math.max(0, Number(r) || 0));
+      const { error } = await sb.from("jobs").update({ discount: disc, advance: adv, status: "ডেলিভারি সম্পন্ন", delivered_date: today() }).eq("id", j.id);
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async jobCollect(el) {
+      const j = jobs.find(x => String(x.id) === el.dataset.id);
+      if (!j) return;
+      const amt = Math.max(0, Number(prompt("কত টাকা জমা নিলেন?")) || 0);
+      if (!amt) return;
+      const adv = Math.min(Math.max(0, Number(j.estimate) - Number(j.discount || 0)), Number(j.advance) + amt);
+      const { error } = await sb.from("jobs").update({ advance: adv }).eq("id", j.id);
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async jobDel(el) {
+      if (!confirm("এই জবটি মুছবেন?")) return;
+      const { error } = await sb.from("jobs").delete().eq("id", el.dataset.id);
+      if (error) return alert(error.message);
+      loadAll();
+    },
+
+    setGDate(el) { gDate = el.value || today(); loadAll(); },
+    genPick(el) {
+      const p = products.find(x => String(x.id) === el.value);
+      if (!p) return;
+      const q = Number($("gQty").value) || 1;
+      $("gName").value = p.name;
+      $("gSell").value = Number(p.sell_price) * q;
+      $("gBuy").value = Number(p.buy_price) * q;
+    },
+    async genSave() {
+      const name = $("gName").value.trim();
+      if (!name) return alert("বিবরণ লিখুন");
+      const qty = Number($("gQty").value) || 1, pid = $("gProd") ? $("gProd").value : "";
+      const p = pid ? products.find(x => String(x.id) === pid) : null;
+      if (p && p.qty < qty) return alert("স্টকে পর্যাপ্ত নেই। আছে: " + p.qty);
+      const { error } = await sb.from("entries").insert({
+        entry_date: gDate, sector: cur, product_id: p ? p.id : null, item_name: name, qty,
+        sell_total: Number($("gSell").value) || 0, buy_total: Number($("gBuy").value) || 0,
+        note: $("gNote").value.trim() || null
+      });
+      if (error) return alert("সেভ হয়নি: " + error.message);
+      if (p) {
+        const { error: e2 } = await sb.from("products").update({ qty: p.qty - qty }).eq("id", p.id);
+        if (e2) alert("স্টক আপডেট হয়নি: " + e2.message);
+      }
+      loadAll();
+    },
+    async genDel(el) {
+      const e = entries.find(x => String(x.id) === el.dataset.id);
+      if (!e || !confirm("এন্ট্রিটি মুছবেন?")) return;
+      if (e.product_id) {
+        const p = products.find(x => String(x.id) === String(e.product_id));
+        if (p) await sb.from("products").update({ qty: p.qty + e.qty }).eq("id", p.id);
+      }
+      const { error } = await sb.from("entries").delete().eq("id", e.id);
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async prodAdd() {
+      const name = $("pName").value.trim();
+      if (!name) return alert("পণ্যের নাম লিখুন");
+      const { error } = await sb.from("products").insert({
+        sector: cur, name, qty: Number($("pQty").value) || 0,
+        buy_price: Number($("pBuy").value) || 0, sell_price: Number($("pSell").value) || 0
+      });
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async prodIn(el) {
+      const p = products.find(x => String(x.id) === el.dataset.id);
+      if (!p) return;
+      const n = Number(prompt(p.name + " — কত পিস যোগ হবে?"));
+      if (!n || n <= 0) return;
+      const { error } = await sb.from("products").update({ qty: p.qty + n }).eq("id", p.id);
+      if (error) return alert(error.message);
+      loadAll();
+    },
+    async prodDel(el) {
+      if (!confirm("পণ্যটি স্টক থেকে মুছবেন?")) return;
+      const { error } = await sb.from("products").delete().eq("id", el.dataset.id);
+      if (error) return alert(error.message);
+      loadAll();
+    }
+  };
+
+  document.addEventListener("click", e => {
+    const el = e.target.closest("button[data-act]");
+    if (el && actions[el.dataset.act]) actions[el.dataset.act](el);
+  });
+  document.addEventListener("change", e => {
+    const el = e.target.closest("select[data-act], input[data-act]");
+    if (el && actions[el.dataset.act]) actions[el.dataset.act](el);
+  });
+
+  // ---------- শুরু ----------
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) showApp();
+    else showLogin();
+  })();
+</script>
+</body>
+</html>
