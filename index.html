@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>উজ্জ্বল গ্যাজেট জোন</title>
+<style>
+  body{font-family:system-ui,sans-serif;margin:0;padding:10px;background:#f1f3f6;color:#222}
+  .box{background:#fff;border-radius:10px;padding:14px;max-width:1000px;margin:0 auto 12px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+  h3{margin:6px 0 10px}
+  label{display:block;font-size:13px;color:#555;margin-top:6px}
+  input,select{width:100%;padding:9px;margin:4px 0;border:1px solid #ccc;border-radius:6px;font-size:15px;box-sizing:border-box}
+  button{padding:9px 13px;margin:3px 3px 3px 0;border:0;border-radius:6px;background:#1a73e8;color:#fff;font-size:14px;cursor:pointer}
+  button.red{background:#d93025}
+  button.green{background:#188038}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+  .stat{background:#f5f7fa;border-radius:8px;padding:10px;font-size:14px}
+  .stat b{display:block;font-size:18px;margin:2px 0}
+  .profit{color:#188038;font-weight:600}
+  .err{color:#d93025}
+  .hidden{display:none !important}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  th,td{text-align:left;padding:7px;border-bottom:1px solid #eee;white-space:nowrap}
+  .scroll{overflow-x:auto}
+
+  /* ----- উপরের মেনু বার ----- */
+  .sticky{position:sticky;top:0;z-index:10;margin:-10px -10px 10px}
+  .topbar{background:#0b57d0;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
+  .brand{font-size:18px;font-weight:700}
+  .menu{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px}
+  .shopmenu{background:#0a47a9}
+  .shopmenu button{margin:0;background:rgba(255,255,255,.2);color:#fff}
+  .shopmenu button.on{background:#fff;color:#0b57d0}
+  .sectormenu{background:#e8f0fe}
+  .sectormenu button{margin:0;background:#fff;color:#0b57d0;border:1px solid #c6dafc}
+  .sectormenu button.on{background:#0b57d0;color:#fff;border-color:#0b57d0}
+</style>
+</head>
+<body>
+
+<div id="loginBox" class="box">
+  <h3>লগ ইন করুন</h3>
+  <input id="email" type="email" placeholder="ইমেইল">
+  <input id="password" type="password" placeholder="পাসওয়ার্ড">
+  <button id="loginBtn">লগ ইন</button>
+  <p id="loginMsg" class="err"></p>
+</div>
+
+<div id="appBox" class="hidden">
+
+  <div class="sticky">
+    <div class="topbar">
+      <span class="brand">উজ্জ্বল গ্যাজেট জোন</span>
+      <button id="logoutBtn" class="red">লগ আউট</button>
+    </div>
+    <div class="menu shopmenu" id="shopBtns"></div>
+    <div class="menu sectormenu" id="sectorBtns"></div>
+  </div>
+
+  <div class="box">
+    <label>তারিখ</label>
+    <input id="date" type="date">
+  </div>
+
+  <div class="box">
+    <h3 id="summaryTitle">সারসংক্ষেপ</h3>
+    <div id="summary" class="row"></div>
+    <p>মোট আয়: <b id="totIncome">0</b> ৳ &nbsp;|&nbsp; মোট লাভ: <b id="totProfit" class="profit">0</b> ৳</p>
+  </div>
+
+  <div class="box">
+    <h3 id="sectorTitle"></h3>
+    <div class="row">
+      <div id="prodWrap">
+        <label>স্টক থেকে পণ্য বাছাই (ঐচ্ছিক)</label>
+        <select id="prodSel"></select>
+      </div>
+      <div>
+        <label>বিবরণ / নাম</label>
+        <input id="itemName" placeholder="যেমন: Oneplus 120w চার্জার">
+      </div>
+      <div>
+        <label>পরিমাণ</label>
+        <input id="qty" type="number" min="1" value="1">
+      </div>
+      <div>
+        <label>আয় / বিক্রি (টাকা)</label>
+        <input id="sell" type="number">
+      </div>
+      <div>
+        <label>খরচ / ক্রয় (টাকা)</label>
+        <input id="buy" type="number">
+      </div>
+      <div>
+        <label>মন্তব্য</label>
+        <input id="note" placeholder="ঐচ্ছিক">
+      </div>
+    </div>
+    <button id="saveEntry">এন্ট্রি সেভ করুন</button>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>বিবরণ</th><th>পরিমাণ</th><th>আয়</th><th>খরচ</th><th>লাভ</th><th>মন্তব্য</th><th></th></tr></thead>
+        <tbody id="entryRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="box" id="stockBox">
+    <h3>স্টক ব্যবস্থাপনা</h3>
+    <div class="row">
+      <input id="pName" placeholder="পণ্যের নাম">
+      <input id="pQty" type="number" placeholder="স্টক সংখ্যা">
+      <input id="pBuy" type="number" placeholder="ক্রয়মূল্য (প্রতি পিস)">
+      <input id="pSell" type="number" placeholder="বিক্রয়মূল্য (প্রতি পিস)">
+    </div>
+    <button id="addProduct">পণ্য যোগ করুন</button>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>পণ্য</th><th>স্টক</th><th>ক্রয়মূল্য</th><th>বিক্রয়মূল্য</th><th></th></tr></thead>
+        <tbody id="stockRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+  const SUPABASE_URL = "https://fvxapnnbkhtvgwzthrsf.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_oj6orwGEGlo5bwHB4whaSg_xo6FzsaT";
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // DUMMY: নিচের মেনু ভাগ অস্থায়ী। দোকান ও সেক্টরের আসল ভাগ পরে ঠিক করা হবে।
+  const SHOPS = [
+    { key: "telecom",  name: "উজ্জ্বল টেলিকম",       sectors: ["bkash", "flexi", "sim", "card"] },
+    { key: "gadget",   name: "উজ্জ্বল গ্যাজেট জোন",  sectors: ["service", "accessory", "mobile", "gadget"] },
+    { key: "personal", name: "পার্সোনাল",            sectors: ["bkash_personal"] }
+  ];
+
+  // [নাম, স্টক আছে কিনা]
+  const SECTOR_INFO = {
+    service:        ["মোবাইল সার্ভিসিং", false],
+    bkash:          ["বিকাশ (উজ্জ্বল টেলিকম)", false],
+    bkash_personal: ["বিকাশ (পার্সোনাল)", false],
+    flexi:          ["ফ্লেক্সি লোড", false],
+    sim:            ["সিম", true],
+    card:           ["মিনিট / এমবি কার্ড", true],
+    accessory:      ["মোবাইল অ্যাক্সেসরিজ", true],
+    mobile:         ["মোবাইল", true],
+    gadget:         ["গ্যাজেট", true]
+  };
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const money = n => Math.round(Number(n) || 0).toLocaleString("en-US");
+  const today = () => new Date().toLocaleDateString("en-CA");
+  const secName = k => SECTOR_INFO[k][0];
+  const isStock = k => SECTOR_INFO[k][1];
+  const shopOf = k => SHOPS.find(s => s.sectors.includes(k));
+
+  let cur = "bkash";
+  let products = [];
+  let entries = [];
+
+  // ---------- লগ ইন ----------
+  $("loginBtn").onclick = async () => {
+    $("loginMsg").textContent = "";
+    const { error } = await sb.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+    if (error) $("loginMsg").textContent = "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে";
+    else showApp();
+  };
+  $("logoutBtn").onclick = async () => { await sb.auth.signOut(); showLogin(); };
+
+  function showLogin() {
+    $("appBox").classList.add("hidden");
+    $("loginBox").classList.remove("hidden");
+  }
+  function showApp() {
+    $("loginBox").classList.add("hidden");
+    $("appBox").classList.remove("hidden");
+    $("date").value = today();
+    buildMenus();
+    loadAll();
+  }
+
+  // ---------- ডাটা আনা ----------
+  async function loadAll() {
+    const d = $("date").value;
+    const [p, e] = await Promise.all([
+      sb.from("products").select("*").order("name"),
+      sb.from("entries").select("*").eq("entry_date", d).order("created_at")
+    ]);
+    if (p.error || e.error) return alert("ডাটা আনা যায়নি: " + (p.error || e.error).message);
+    products = p.data;
+    entries = e.data;
+    renderAll();
+  }
+  $("date").onchange = loadAll;
+
+  // ---------- মেনু ----------
+  function buildMenus() {
+    const shop = shopOf(cur);
+
+    $("shopBtns").innerHTML = "";
+    SHOPS.forEach(s => {
+      const b = document.createElement("button");
+      b.textContent = s.name;
+      b.className = s.key === shop.key ? "on" : "light";
+      b.onclick = () => { cur = s.sectors[0]; clearForm(); buildMenus(); renderAll(); };
+      $("shopBtns").appendChild(b);
+    });
+
+    $("sectorBtns").innerHTML = "";
+    shop.sectors.forEach(k => {
+      const b = document.createElement("button");
+      b.textContent = secName(k);
+      b.className = k === cur ? "on" : "light";
+      b.onclick = () => { cur = k; clearForm(); buildMenus(); renderAll(); };
+      $("sectorBtns").appendChild(b);
+    });
+  }
+
+  // ---------- দেখানো ----------
+  function renderAll() {
+    renderSummary();
+    renderForm();
+    renderEntries();
+    renderStock();
+  }
+
+  function renderSummary() {
+    const shop = shopOf(cur);
+    let inc = 0, prof = 0;
+    $("summaryTitle").textContent = shop.name + " — সারসংক্ষেপ";
+    $("summary").innerHTML = shop.sectors.map(k => {
+      const list = entries.filter(x => x.sector === k);
+      const i = list.reduce((s, x) => s + Number(x.sell_total), 0);
+      const p = list.reduce((s, x) => s + Number(x.sell_total) - Number(x.buy_total), 0);
+      inc += i;
+      prof += p;
+      return `<div class="stat">${esc(secName(k))}<b>${money(i)} ৳</b><span>লাভ: ${money(p)} ৳</span></div>`;
+    }).join("");
+    $("totIncome").textContent = money(inc);
+    $("totProfit").textContent = money(prof);
+  }
+
+  function renderForm() {
+    const stock = isStock(cur);
+    $("sectorTitle").textContent = secName(cur);
+    $("prodWrap").classList.toggle("hidden", !stock);
+    $("stockBox").classList.toggle("hidden", !stock);
+    const opts = products.filter(p => p.sector === cur);
+    $("prodSel").innerHTML = `<option value="">— ম্যানুয়াল এন্ট্রি —</option>` +
+      opts.map(p => `<option value="${p.id}">${esc(p.name)} (স্টক ${p.qty})</option>`).join("");
+  }
+
+  function renderEntries() {
+    const list = entries.filter(x => x.sector === cur);
+    $("entryRows").innerHTML = list.length ? list.map(x => {
+      const profit = Number(x.sell_total) - Number(x.buy_total);
+      return `<tr>
+        <td>${esc(x.item_name)}</td><td>${x.qty}</td>
+        <td>${money(x.sell_total)}</td><td>${money(x.buy_total)}</td>
+        <td class="profit">${money(profit)}</td><td>${esc(x.note)}</td>
+        <td><button class="red" data-del="${x.id}">মুছুন</button></td>
+      </tr>`;
+    }).join("") : `<tr><td colspan="7">এই তারিখে এই সেক্টরে কোনো এন্ট্রি নেই</td></tr>`;
+    $("entryRows").querySelectorAll("[data-del]").forEach(b => b.onclick = () => delEntry(b.dataset.del));
+  }
+
+  function renderStock() {
+    if (!isStock(cur)) return;
+    const list = products.filter(p => p.sector === cur);
+    $("stockRows").innerHTML = list.length ? list.map(p => `<tr>
+        <td>${esc(p.name)}</td><td>${p.qty}</td>
+        <td>${money(p.buy_price)}</td><td>${money(p.sell_price)}</td>
+        <td><button class="green" data-in="${p.id}">+ স্টক</button>
+            <button class="red" data-pdel="${p.id}">মুছুন</button></td>
+      </tr>`).join("") : `<tr><td colspan="5">এখনো কোনো পণ্য নেই</td></tr>`;
+    $("stockRows").querySelectorAll("[data-in]").forEach(b => b.onclick = () => restock(b.dataset.in));
+    $("stockRows").querySelectorAll("[data-pdel]").forEach(b => b.onclick = () => delProduct(b.dataset.pdel));
+  }
+
+  // ---------- স্টক বাছাই করলে নাম ও দাম বসবে ----------
+  function selProd() {
+    return products.find(x => String(x.id) === $("prodSel").value);
+  }
+  function recalc(p) {
+    const q = Number($("qty").value) || 1;
+    $("sell").value = Number(p.sell_price) * q;
+    $("buy").value = Number(p.buy_price) * q;
+  }
+  $("prodSel").onchange = () => {
+    const p = selProd();
+    if (p) { $("itemName").value = p.name; recalc(p); }
+  };
+  $("qty").oninput = () => { const p = selProd(); if (p) recalc(p); };
+
+  function clearForm() {
+    $("prodSel").value = "";
+    $("itemName").value = "";
+    $("qty").value = "1";
+    $("sell").value = "";
+    $("buy").value = "";
+    $("note").value = "";
+  }
+
+  // ---------- এন্ট্রি সেভ ----------
+  $("saveEntry").onclick = async () => {
+    const name = $("itemName").value.trim();
+    if (!name) return alert("বিবরণ লিখুন");
+    const qty = Number($("qty").value) || 1;
+    const p = selProd() || null;
+    if (p && p.qty < qty) return alert("স্টকে পর্যাপ্ত নেই। আছে: " + p.qty);
+
+    const row = {
+      entry_date: $("date").value,
+      sector: cur,
+      product_id: p ? p.id : null,
+      item_name: name,
+      qty,
+      sell_total: Number($("sell").value) || 0,
+      buy_total: Number($("buy").value) || 0,
+      note: $("note").value.trim() || null
+    };
+    const { error } = await sb.from("entries").insert(row);
+    if (error) return alert("সেভ হয়নি: " + error.message);
+
+    if (p) {
+      const { error: e2 } = await sb.from("products").update({ qty: p.qty - qty }).eq("id", p.id);
+      if (e2) alert("স্টক আপডেট হয়নি: " + e2.message);
+    }
+    clearForm();
+    loadAll();
+  };
+
+  // ---------- এন্ট্রি মোছা (স্টক ফেরত যাবে) ----------
+  async function delEntry(id) {
+    const e = entries.find(x => String(x.id) === String(id));
+    if (!e || !confirm("এন্ট্রিটি মুছবেন?")) return;
+    if (e.product_id) {
+      const p = products.find(x => String(x.id) === String(e.product_id));
+      if (p) await sb.from("products").update({ qty: p.qty + e.qty }).eq("id", p.id);
+    }
+    const { error } = await sb.from("entries").delete().eq("id", e.id);
+    if (error) return alert(error.message);
+    loadAll();
+  }
+
+  // ---------- স্টক ----------
+  $("addProduct").onclick = async () => {
+    const name = $("pName").value.trim();
+    if (!name) return alert("পণ্যের নাম লিখুন");
+    const { error } = await sb.from("products").insert({
+      sector: cur,
+      name,
+      qty: Number($("pQty").value) || 0,
+      buy_price: Number($("pBuy").value) || 0,
+      sell_price: Number($("pSell").value) || 0
+    });
+    if (error) return alert(error.message);
+    ["pName", "pQty", "pBuy", "pSell"].forEach(i => $(i).value = "");
+    loadAll();
+  };
+
+  async function restock(id) {
+    const p = products.find(x => String(x.id) === String(id));
+    if (!p) return;
+    const n = Number(prompt(p.name + " — কত পিস যোগ হবে?"));
+    if (!n || n <= 0) return;
+    const { error } = await sb.from("products").update({ qty: p.qty + n }).eq("id", p.id);
+    if (error) return alert(error.message);
+    loadAll();
+  }
+
+  async function delProduct(id) {
+    if (!confirm("পণ্যটি স্টক থেকে মুছবেন? আগের বিক্রির হিসাব থেকে যাবে।")) return;
+    const { error } = await sb.from("products").delete().eq("id", id);
+    if (error) return alert(error.message);
+    loadAll();
+  }
+
+  // ---------- শুরু ----------
+  (async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) showApp();
+    else showLogin();
+  })();
+</script>
+</body>
+</html>
