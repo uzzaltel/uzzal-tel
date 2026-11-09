@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>মোবাইল সার্ভিসিং</title>
+<title>বিকাশ পার্সোনালের হিসাব</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{--pink:#e2136e;--pink2:#ff4f9a;--soft:rgba(255,255,255,.72);--line:rgba(255,255,255,.25)}
@@ -145,7 +145,7 @@
   const sb = createClient("https://fvxapnnbkhtvgwzthrsf.supabase.co", "sb_publishable_oj6orwGEGlo5bwHB4whaSg_xo6FzsaT");
 
   // DUMMY: দোকান ও সেক্টরের ভাগ অস্থায়ী। পরে ঠিক করা হবে।
-  const ONLY = "gadget";
+  const ONLY = "personal";
   const SHOP_ALL = [
     { key: "telecom",  name: "বিকাশ এজেন্টের হিসাব",      sectors: ["bkash", "nagad", "flexi", "sim", "card"] },
     { key: "gadget",   name: "মোবাইল সার্ভিসিং", sectors: ["service", "parts", "accessory", "mobile", "gadget"] },
@@ -175,7 +175,7 @@
   const sumOf = (arr, f) => arr.reduce((s, x) => s + (Number(f(x)) || 0), 0);
   const stat = (l, v, c = "") => `<div class="stat"><small>${l}</small><b class="${c}">${v}</b></div>`;
 
-  let cur = "service";
+  let cur = "bkash_personal";
   let curCardOp = "GP";
   let assets = {};
   let gDate = today();
