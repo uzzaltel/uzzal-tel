@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f97316">
+<title>Uzzal Telecom — Inventory & Service Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+<script>
+tailwind.config = {theme:{extend:{colors:{brand:{50:'#fff7ed',100:'#ffedd5',500:'#f97316',600:'#ea580c',700:'#c2410c'}},fontFamily:{sans:['Kalpurush','Nirmala UI','sans-serif']}}}};
+/* Supabase Dashboard → Project Settings → API থেকে এই দুইটি মান বসান */
+window.SUPABASE_URL = 'https://fvxapnnbkhtvgwzthrsf.supabase.co';
+window.SUPABASE_ANON_KEY = 'sb_publishable_oj6orwGEGlo5bwHB4whaSg_xo6FzsaT';
+</script>
+<style>
+
+body{font-family:'Kalpurush','Nirmala UI',sans-serif;overflow-x:hidden;min-height:100vh;background:radial-gradient(circle at 12% 18%,#fed7aa 0,transparent 32%),radial-gradient(circle at 88% 12%,#c7d2fe 0,transparent 34%),radial-gradient(circle at 60% 92%,#a7f3d0 0,transparent 36%),#eef2f7;background-attachment:fixed}
+.glass-dark{background:linear-gradient(135deg,rgba(15,23,42,.9),rgba(30,41,59,.75));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}
+.no-scrollbar::-webkit-scrollbar{display:none}
+.card{position:relative;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.35));backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,.7);border-radius:1.1rem;box-shadow:0 8px 32px rgba(15,23,42,.1),inset 0 1px 0 rgba(255,255,255,.9);padding:1rem}
+.card::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.6) 50%,transparent 60%);transform:translateX(-120%);pointer-events:none}
+.card:hover::after{animation:sweep 1s ease}
+.sheen::after{animation:sweep 4s ease-in-out infinite}
+@keyframes sweep{to{transform:translateX(120%)}}
+.blink{animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{50%{opacity:.55;transform:scale(1.06)}}
+.modal-box{background:rgba(255,255,255,.88)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.inp{width:100%;padding:.6rem .85rem;border:1px solid #e2e8f0;border-radius:.75rem;font-size:.875rem;background:#fff}
+.inp:focus{outline:none;border-color:#f97316;box-shadow:0 0 0 3px #ffedd5}
+.lbl{display:block;font-size:.75rem;font-weight:600;margin-bottom:.3rem;color:#334155}
+.btn{padding:.6rem 1.1rem;border-radius:.75rem;font-size:.875rem;font-weight:600;background:#f97316;color:#fff;box-shadow:0 4px 0 #c2410c;transition:transform .1s,box-shadow .1s}
+.btn:hover{background:#ea580c}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #c2410c}
+.btn-ghost{padding:.6rem 1.1rem;border-radius:.75rem;font-size:.875rem;border:1px solid #e2e8f0;background:#fff}
+.tab{padding:.75rem 1rem;font-weight:600;font-size:.875rem;border-bottom:2px solid transparent;color:#64748b;white-space:nowrap}
+.tab.on{color:#ea580c;border-color:#f97316}
+.scene{perspective:1000px}
+.tilt{transform-style:preserve-3d;transition:transform .25s ease-out;will-change:transform}
+.rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) backwards;animation-delay:var(--d,0s)}
+@keyframes rise{from{opacity:0;transform:perspective(900px) rotateX(-25deg) translateY(30px)}to{opacity:1;transform:none}}
+.modal-in{animation:modalIn .5s cubic-bezier(.2,.8,.2,1) backwards}
+@keyframes modalIn{from{opacity:0;transform:perspective(1000px) rotateX(14deg) scale(.9)}to{opacity:1;transform:none}}
+.float3d{animation:float3d 6s ease-in-out infinite;transform-style:preserve-3d}
+@keyframes float3d{0%,100%{transform:rotateX(8deg) rotateY(-10deg) translateY(0)}50%{transform:rotateX(-5deg) rotateY(10deg) translateY(-10px)}}
+.bar{transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.chip{box-shadow:0 3px 0 #cbd5e1;transition:all .2s;background:#fff;border:1px solid #e2e8f0}
+.chip.on{background:#f97316;border-color:#f97316;color:#fff;box-shadow:0 4px 0 #c2410c;transform:translateY(-2px)}
+.chip:active{transform:translateY(2px)}
+#print-area{display:none}
+@media print{body *{visibility:hidden}#print-area,#print-area *{visibility:visible}#print-area{display:block;position:absolute;left:0;top:0;width:80mm;padding:4mm;background:#fff;color:#000;font-size:12px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+body{font-family:'Kalpurush','Nirmala UI',sans-serif;overflow-x:hidden;min-height:100vh}
+#auth-screen{background:radial-gradient(circle at 12% 18%,#fed7aa 0,transparent 32%),radial-gradient(circle at 88% 12%,#c7d2fe 0,transparent 34%),radial-gradient(circle at 60% 92%,#a7f3d0 0,transparent 36%),#eef2f7;background-attachment:fixed}
+
+/* Ledger page polish */
+#view-ledger .card{border:1px solid rgba(226,232,240,.85);box-shadow:0 12px 35px rgba(15,23,42,.055)}
+#view-ledger .tab{transition:transform .2s ease,background .2s ease}
+#view-ledger tbody tr{transition:background .18s ease}
+#view-ledger tbody tr:hover{background:#f8fafc}
+#view-ledger .tilt{transition:transform .25s ease,box-shadow .25s ease}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+.theme-frame{display:block;width:100%;height:calc(100vh - 150px);min-height:720px;border:0;border-radius:18px;background:transparent}
+@media (max-width:640px){.theme-frame{height:calc(100vh - 130px);min-height:640px}}
+/* ===== হালকা করা: হভারে নড়াচড়া/কাত হওয়া ও আলো-প্রভাব বন্ধ, গ্লাসি লুক অক্ষত ===== */
+.tilt{transform:none!important;transition:none!important}
+.rise{animation:none!important;opacity:1!important}
+.sheen,.blink,.float3d{animation:none!important}
+.card::after,.card:hover::after{display:none!important;animation:none!important}
+.chip,.btn{transition:none!important}
+/* ===== Barcode Generator ===== */
+#bcg-print{display:none}
+.bcg-label{background:#fff;color:#000;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:1mm;margin:0 0 2mm 0;font-family:Arial,'Kalpurush','Nirmala UI',sans-serif}
+.bcg-name{font-size:7pt;font-weight:700;line-height:1.1;text-align:center;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.bcg-model{font-size:6pt;line-height:1.1;text-align:center}
+svg.bcg-bc{width:100%;height:auto;max-height:70%}
+@media print{
+  body *{visibility:hidden}
+  #bcg-print,#bcg-print *{visibility:visible}
+  #bcg-print{display:block!important;position:absolute;left:0;top:0;width:auto}
+  .bcg-label{page-break-after:always;break-after:page}
+  .bcg-label:last-child{page-break-after:auto;break-after:auto}
+}
+@font-face{font-family:'Kalpurush';font-style:normal;font-weight:400 700;font-display:swap;src:local('Kalpurush'),local('Kalpurush Regular'),url('Kalpurush.ttf') format('truetype')}
+.stock-brand-strip{display:flex;gap:0;align-items:stretch;overflow-x:auto;white-space:nowrap;border-bottom:3px solid #ef4444;background:#fff;scrollbar-width:thin}
+.stock-brand-btn{display:flex;align-items:center;gap:7px;padding:13px 15px;font-size:14px;color:#333;border-bottom:3px solid transparent;margin-bottom:-3px;flex:0 0 auto}
+.stock-brand-btn:hover,.stock-brand-btn.active{color:#16a34a;border-bottom-color:#16a34a;background:#f8fafc}
+.stock-brand-btn span{font-size:11px;color:#94a3b8}
+.stock-dropdown{display:flex;flex-direction:column;align-items:stretch;width:max-content;min-width:225px;max-width:min(92vw,360px);max-height:360px;overflow:auto;background:#fff;border:2px solid #ef4444;border-top:0;box-shadow:0 8px 20px #00000012;position:relative;z-index:10}
+.stock-dropdown-title{padding:10px 14px;font-size:12px;font-weight:700;color:#64748b;background:#f8fafc;border-bottom:1px solid #e2e8f0}
+.stock-dropdown button{text-align:left;padding:10px 14px;font-size:14px;color:#64748b}
+.stock-dropdown button:hover{background:#f1f5f9;color:#16a34a}
+
+/* ---- restored page styles (dropdown menu, designer, barcode print) ---- */
+
+  #bcgd-prev{touch-action:none;user-select:none}
+#bcgd-prev .bcg-label,#bcg-print .bcg-label{position:relative}
+.bcgd-t{padding:6px 10px;border-radius:10px;background:#f1f5f9;font-weight:600;color:#334155}
+.bcgd-t.on{background:#0ea5e9;color:#fff}
+.bcgd-label{position:relative;background:#fff;box-sizing:border-box;overflow:hidden;font-family:Arial,'Kalpurush','Nirmala UI',sans-serif}
+.bcgd-el{box-sizing:border-box;cursor:move}
+.bcgd-el.bcgd-lock{cursor:not-allowed}
+.bcgd-sel{box-shadow:0 0 0 0.25mm #0ea5e9 inset}
+.bcgd-h{position:absolute;right:-1.2mm;bottom:-1.2mm;width:2.6mm;height:2.6mm;background:#0ea5e9;border-radius:50%;cursor:nwse-resize}
+#bcgd-tb1 .bcgd-t,#bcgd-tb2 .bcgd-t{min-width:44px;text-align:center}
+#bcg-print .bcgd-label{position:relative}
+
+.bcgd-t{width:38px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;background:#f1f5f9;color:#334155;font-size:15px}
+.bcgd-t.on{background:#0ea5e9;color:#fff}
+.bcgd-t:disabled{opacity:.4}
+
+.bcgd-t{width:42px;height:40px;font-size:18px}
+.bcgd-sel{outline:0.35mm dashed #0ea5e9;outline-offset:0.3mm}
+.bcgd-h{background:#fff;border:0.5mm solid #0ea5e9;width:3mm;height:3mm}
+.bcgd-h{width:5mm!important;height:5mm!important;right:-2.2mm!important;bottom:-2.2mm!important;border-width:0.6mm!important}
+.bcgd-el{touch-action:none}
+
+#inv-main-cats{display:none!important}
+#navpanel{position:fixed;z-index:90;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 18px 40px rgba(15,23,42,.18);padding:6px;min-width:230px;max-height:70vh;overflow-y:auto}
+.navi{display:flex;width:100%;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;font-weight:600;color:#334155;text-align:left;font-size:14px}
+.navi:hover{background:#f1f5f9}
+.navi.open{background:#fff7ed;color:#c2410c}
+.navkids{margin:2px 0 6px 12px;border-left:2px solid #fed7aa;padding-left:6px}
+.navkids .navi{font-weight:500;font-size:13px}
+
+/* ===== কাস্টম ড্রপডাউন মেনু স্টাইল (নতুন যুক্ত করা হয়েছে) ===== */
+.dropdown-container { position: relative; display: inline-block; }
+.dropdown-menu { display: none; position: absolute; background-color: #ffffff; min-width: 180px; box-shadow: 0px 10px 25px rgba(0,0,0,0.15); border-radius: 12px; z-index: 100; border: 1px solid #e2e8f0; padding: 6px; top: 100%; left: 0; margin-top: 6px; animation: dropdownFade .2s ease; }
+.dropdown-container:hover .dropdown-menu { display: block; }
+.dropdown-menu a, .dropdown-menu button { color: #334155; padding: 10px 14px; text-decoration: none; display: block; font-size: 14px; font-weight: 500; border-radius: 8px; text-align: left; width: 100%; background: transparent; border: none; cursor: pointer; transition: background .15s, color .15s; }
+.dropdown-menu a:hover, .dropdown-menu button:hover { background-color: #fff7ed; color: #ea580c; }
+@keyframes dropdownFade { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col pb-10">
+
+<div id="auth-screen" class="min-h-screen flex items-center justify-center p-4">
+  <div class="card w-full max-w-md p-7">
+    <div class="text-center mb-6">
+      <div class="mx-auto w-14 h-14 rounded-2xl bg-brand-500 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-solid fa-boxes-stacked"></i></div>
+      <h1 class="text-2xl font-extrabold mt-3">Uzzal Telecom</h1>
+      <p class="text-sm text-slate-500">ইনভেন্টরি ও সার্ভিসিং ম্যানেজমেন্ট</p>
+    </div>
+    <div class="space-y-3">
+      <div><label class="lbl">ইমেইল</label><input id="auth-email" class="inp" type="email" placeholder="আপনার ইমেইল" autocomplete="username"></div>
+      <div><label class="lbl">পাসওয়ার্ড</label><input id="auth-password" class="inp" type="password" placeholder="কমপক্ষে ৬ অক্ষর" autocomplete="current-password"></div>
+      <p id="auth-error" class="text-sm text-rose-600 min-h-5"></p>
+      <button class="btn w-full" onclick="handleAuth('login')">লগইন করুন</button>
+      <button class="btn-ghost w-full" onclick="handleAuth('signup')">নতুন অ্যাকাউন্ট তৈরি করুন</button>
+    </div>
+    <p class="text-xs text-slate-400 mt-5 text-center">আপনার ডেটা Supabase ক্লাউডে আপনার অ্যাকাউন্টের অধীনে সংরক্ষিত থাকবে।</p>
+  </div>
+</div>
+<div id="app-shell" class="hidden min-h-screen flex flex-col">
+<header class="glass-dark text-white sticky top-0 z-30 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between relative">
+    <div class="min-w-0"><h1 class="font-bold text-lg leading-tight" id="shop-title">উজ্জ্বল টেলিকম</h1><p class="text-xs text-slate-400">মোবাইল রিপেয়ার ও ইনভেন্টরি ট্র্যাকার</p></div>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABICAIAAADajyQQAAAM8UlEQVR42u2aeZRU1Z3Hv/fe92qv7qpueqFpgaZpBJp939EEjQFEYhTGkKOZiYHESVzmRD1mUEYjCVmM44gziXKIGyJBVFBkWEQFZXVh7x3ofaG7uqq7a33v3t/8UdXQLE1sJDMTT70/6tyqenf53Pu739/v/t5jSil8HS+Or+mVBEuCJcGSYEmwJFgSLAmWBEuCJcGSYP/PL+3/egAEIhCBAWBgDGBfCzDGLwRRJojAOBj/+wVT8FehpQThM7C4kTYIaYPAO4ekFEiB8ytbQ3YFOQ8CpCTBGWMAIBUxgPOedZ+oRQbCLThzBFU7UP0BQs3IGof8OcidDm9B563mFeBdCVgCCCCis1/j5Z42cl4dM4SS9di/AnXFSPUgZzKuXYiCW2F1gwCSPTLOnoERgTH4g8Y7BxumDEnLz3ISYcOBut5e25SCNKkojswZI1BcEQjgjDEGRQl2wRmADQfq+3itkwrSiIiBQApCT/Tx2b/j46XIhcAZvAUY9VOM+jGEDmWCib+J3BMRY6yyOxzUrlN5vsmhABCHlQjZ0K4v0a8f9zX6C8R2N54m48d4xrgmuCY450xwrgkuOr8SIf6LJjhjjDH2/VVH/uP9SsaYJIBxcA2kIE2AMO4BfGcTnJmwuBGsxY57sXYGGg+Ba1Dyom1x9cRDcKa5NJuemBSvS09z6qebgqcaghaL0Bmy0+xRQza0hIVFWDgyPLZ+Gc5TTR0HS1t6uS0zh2UKwT0ui8uuX2A+4AIgyBj6fRPz38Rbc0EM7l5oPIi1MzH7JQyaD2l0CgwhYRPs6oARYEpSnZMVk8pp017eVf3MxlJHhqum3P/oXYXtYeOV909b0xx1JS2/v2f0mP7ebzzxyehB3sq69utGZGy4d3zXFi7C0yFj6DMVN67COwthdcOWCjOKd27HvDdQcEvCJhkGoZPtKkUejHMGKEWKSNeEP2Q8PH9Q/erZQ7PsuQM898zq/5t/GFrz/Lf7ui2DBvdafH2/vAz7uvvGrF0yctqwXltLWqRUmmCX0xuvQxoY9F0M+wHCfgAQFug2vHcnmo4Q18AY6vbirVtAEqQuZrsSMEZEUmqCcc50TZiKlCKrxh/fWL672Lfr0cnZqVaLxh9ce6Kkpv2jx6a47Xplc/A/t5y8e/XRWl8kxS7iWv/XfTcRJj0GexpkDCQhLDCDautPuIqSUtj7BI5uwoHfgQuQ+kpgcY3u7bUxu7bqg6qjla1r9lS31rRPG+jd9EXjr1498YtbC2JR41RTx3PbT67cVL580ZBAe7SmJXT/X0rL2owPHpk0vF9qIGJqgkkieXkPwThIIrUvBsxGLAguoAxl84r6PS0HXuGc08ifwO3A3hWoO5jQnq5CsGzZsp6AQRG5bLrHZVn9YdXKHSff3NcwdWTWb2+/9mdrjjeHzcO1bU9vrihrDu4pbw1Itu9U4Om3S/1ReevY3m/ur3v9s4amatqhSuHNy7qv76gdlOW8elamIOOtm/eKRR7QV5ZugO0wlNEtga2TGDVumDcybOmTYeNOI8pJtyBiA3KlQ5zm6bv2YVOnCtx@gmail.com' --no-verify-ssl`}}];
