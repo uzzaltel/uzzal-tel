@@ -1,0 +1,149 @@
+<script id="inventory-smart-selects-v11">
+(function(){
+  const $v=id=>document.getElementById(id);
+  const extras=['Nokia','Huawei','Google Pixel','OnePlus','Xiaomi','Motorola','Honor','QPhone','Others Brands'];
+  const allBrands=[...new Set([...(Object.keys(BRANDS||{})),...extras,'Walton','Symphony','Itel','Tecno'])];
+  const variants=['2/32GB','3/32GB','3/64GB','4/64GB','4/128GB','6/128GB','8/128GB','8/256GB','12/256GB','12/512GB','16/512GB'];
+  const escV=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const option=(v,label=v)=>`<option value="${escV(v)}">${escV(label)}</option>`;
+  function brandList(type){return type==='বাটন ফোন'?[...new Set([...(BUTTON_BRANDS||[]),...allBrands])]:allBrands;}
+  function seriesOf(model,brand){
+    const m=String(model||'').replace(/^Galaxy\s*/i,'').trim();
+    const rules={Samsung:/^([ASM FJ])\s*\d/i,Oppo:/^(A|Reno|F|Find|K|N)\b/i,Vivo:/^(Y|V|T|X)\b/i,Redmi:/^(Note|A|\d)/i,Realme:/^(C|Narzo|GT|P|Note)\b/i,Tecno:/^(Spark|Pop|Camon|Pova|Phantom)\b/i,Infinix:/^(Hot|Note|Smart|Zero|GT)\b/i,Itel:/^(A|P|S|Vision)\b/i,Symphony:/^(Z|i)\d/i,Walton:/^(Primo|Olvio)\b/i};
+    const r=rules[brand]; if(!r)return 'অন্যান্য সিরিজ'; const hit=m.match(r); return hit?hit[1].toUpperCase()+' সিরিজ':'অন্যান্য সিরিজ';
+  }
+  function modelsFor(brand,type){
+    if(type==='বাটন ফোন')return (BUTTON_MODELS&&BUTTON_MODELS[brand])||[];
+    return (BRANDS&&BRANDS[brand])||[];
+  }
+  function fillBrand(preserve=true){
+    const el=$v('i-brand'); if(!el)return; const old=preserve?brandValue():''; const type=$v('i-main-cat').value;
+    el.innerHTML='<option value="">কোম্পানি নির্বাচন করুন</option>'+brandList(type).map(b=>option(b,b==='Others Brands'?'অন্যান্য ব্র্যান্ড':b)).join('')+option('__custom','＋ নতুন কোম্পানি লিখুন');
+    if(old && !brandList(type).includes(old)) {el.value='__custom';$v('i-brand-custom').value=old;$v('i-brand-custom').classList.remove('hidden');}
+    else {el.value=old;$v('i-brand-custom').classList.add('hidden');if(!preserve)$v('i-brand-custom').value='';}
+  }
+  function brandValue(){const s=$v('i-brand');return s.value==='__custom'?$v('i-brand-custom').value.trim():s.value;}
+  function seriesValue(){const s=$v('i-series');return s.value==='__custom'?$v('i-series-custom').value.trim():s.value;}
+  function modelValue(){const s=$v('i-product-model');return s.value==='__custom'?$v('i-model-custom').value.trim():s.value;}
+  function fillSeries(preserve=true){
+    const el=$v('i-series');if(!el)return;const old=preserve?seriesValue():'';const b=brandValue();
+    const models=modelsFor(b,'স্মার্টফোন');const list=[...new Set(models.map(m=>seriesOf(m,b)))].sort((a,b)=>a.localeCompare(b));
+    el.innerHTML='<option value="">সিরিজ নির্বাচন করুন</option>'+list.map(x=>option(x)).join('')+option('__custom','＋ অন্যান্য / নিজে লিখুন');
+    if(old&&list.includes(old)){el.value=old;$v('i-series-custom').classList.add('hidden');}
+    else if(old){el.value='__custom';$v('i-series-custom').value=old;$v('i-series-custom').classList.remove('hidden');}
+    else {el.value='';$v('i-series-custom').value='';$v('i-series-custom').classList.add('hidden');}
+  }
+  function fillModels(preserve=true){
+    const el=$v('i-product-model');if(!el)return;const old=preserve?modelValue():'';const b=brandValue();const type=$v('i-main-cat').value;
+    let list=modelsFor(b,type);
+    if(type==='স্মার্টফোন'){const sr=seriesValue();if(sr&&sr!=='অন্যান্য সিরিজ')list=list.filter(m=>seriesOf(m,b)===sr);}
+    el.innerHTML='<option value="">মডেল নির্বাচন করুন</option>'+list.map(m=>option(m)).join('')+option('__custom','＋ তালিকায় নেই? মডেল লিখুন');
+    if(old&&list.includes(old)){el.value=old;$v('i-model-custom').classList.add('hidden');}
+    else if(old){el.value='__custom';$v('i-model-custom').value=old;$v('i-model-custom').classList.remove('hidden');}
+    else {el.value='';$v('i-model-custom').value='';$v('i-model-custom').classList.add('hidden');}
+  }
+  function fillVariants(){const el=$v('i-variant');if(!el)return;el.innerHTML='<option value="">ভ্যারিয়েন্ট নির্বাচন করুন</option>'+variants.map(v=>option(v)).join('')+option('__custom','＋ অন্য ভ্যারিয়েন্ট লিখুন');}
+  window.onInvBrandChange=function(){const custom=$v('i-brand').value==='__custom';$v('i-brand-custom').classList.toggle('hidden',!custom);if(!custom)$v('i-brand-custom').value='';fillSeries(false);fillModels(false);};
+  window.onInvSeriesChange=function(){const custom=$v('i-series').value==='__custom';$v('i-series-custom').classList.toggle('hidden',!custom);if(!custom)$v('i-series-custom').value='';fillModels(false);};
+  window.onInvModelChange=function(){const custom=$v('i-product-model').value==='__custom';$v('i-model-custom').classList.toggle('hidden',!custom);if(!custom)$v('i-model-custom').value='';};
+  window.onInvVariantChange=function(){const custom=$v('i-variant').value==='__custom';$v('i-variant-custom').classList.toggle('hidden',!custom);if(!custom)$v('i-variant-custom').value='';};
+  const baseCategory=window.onMainCategoryChange;
+  window.onMainCategoryChange=function(){if(baseCategory)baseCategory();fillBrand(true);fillSeries(true);fillModels(true);const phone=$v('i-main-cat').value==='স্মার্টফোন';$v('i-variant').classList.toggle('hidden',!phone);$v('i-variant-custom').classList.add('hidden');};
+  const baseOpen=window.openInvModal;
+  window.openInvModal=function(id){baseOpen(id);fillBrand(false);const p=id?(inventory||[]).find(x=>x.id===id):null;const b=p?.brand||'';if(b){if(brandList($v('i-main-cat').value).includes(b))$v('i-brand').value=b;else{$v('i-brand').value='__custom';$v('i-brand-custom').value=b;$v('i-brand-custom').classList.remove('hidden');}}fillSeries(false);if(p?.series){if([...$v('i-series').options].some(o=>o.value===p.series))$v('i-series').value=p.series;else{$v('i-series').value='__custom';$v('i-series-custom').value=p.series;$v('i-series-custom').classList.remove('hidden');}}fillModels(false);if(p?.productModel){if([...$v('i-product-model').options].some(o=>o.value===p.productModel))$v('i-product-model').value=p.productModel;else{$v('i-product-model').value='__custom';$v('i-model-custom').value=p.productModel;$v('i-model-custom').classList.remove('hidden');}}fillVariants();if(p?.mainCategory==='স্মার্টফোন'&&p.name){const v=variants.find(x=>p.name.toLowerCase().includes(x.toLowerCase()));if(v)$v('i-variant').value=v;else if(/\d+\s*\/\s*\d+\s*gb/i.test(p.name)){$v('i-variant').value='__custom';$v('i-variant-custom').value=p.name.match(/\d+\s*\/\s*\d+\s*gb/i)[0];$v('i-variant-custom').classList.remove('hidden');}}};
+  function commitSelect(id,value){const el=$v(id);if(!el)return;let op=[...el.options].find(o=>o.value===value);if(!op&&value){op=document.createElement('option');op.value=value;op.textContent=value;el.appendChild(op);}el.value=value||'';}
+  const baseSave=window.saveInv;
+  window.saveInv=function(e){
+    const type=$v('i-main-cat').value;
+    if(type!=='অন্যান্য')commitSelect('i-brand',brandValue());
+    if(type==='স্মার্টফোন'){commitSelect('i-series',seriesValue());commitSelect('i-product-model',modelValue());const variant=$v('i-variant').value==='__custom'?$v('i-variant-custom').value.trim():$v('i-variant').value;const model=modelValue();const brand=brandValue();if(variant)$v('i-name').value=[brand,model,variant].filter(Boolean).join(' ');else if(!$v('i-name').value.trim())$v('i-name').value=[brand,model].filter(Boolean).join(' ');}
+    else if(type==='বাটন ফোন')commitSelect('i-product-model',modelValue());
+    else if(type==='অ্যাক্সেসরিজ')commitSelect('i-brand',brandValue());
+    baseSave(e);
+  };
+  fillVariants();fillBrand(false);
+})();
+
+/* ===== Button Ripple Animation ===== */
+document.addEventListener('pointerdown', function(e){
+  var b = e.target.closest && e.target.closest('.btn,.btn-ghost,.chip,nav .tab');
+  if (!b || b.disabled || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  var r = b.getBoundingClientRect(), s = document.createElement('span'), sz = Math.max(r.width, r.height) * 1.6;
+  s.className = 'ripple'; s.style.width = s.style.height = sz + 'px';
+  s.style.left = (e.clientX - r.left - sz / 2) + 'px'; s.style.top = (e.clientY - r.top - sz / 2) + 'px';
+  b.appendChild(s); setTimeout(function(){ s.remove(); }, 650);
+}, true);
+
+/* ===== Tab & Dropdown Entrance Animations ===== */
+const _switchTabAnimBase = switchTab;
+switchTab = function(name){
+  _switchTabAnimBase(name);
+  const sec = document.getElementById('view-' + name);
+  if (sec) { sec.classList.remove('view-anim'); void sec.offsetWidth; sec.classList.add('view-anim'); }
+};
+
+const _navOpenAnimBase = navOpen;
+navOpen = function(id){
+  const wasOpen = NAV_OPEN && NAV_OPEN.g === id;
+  _navOpenAnimBase(id);
+  const p = navPanel();
+  if (!wasOpen && p && p.style.display === 'block') {
+    p.classList.remove('panel-anim'); void p.offsetWidth; p.classList.add('panel-anim');
+  }
+};
+
+/* ===== Fix pmApply: show smartphone/button fields cleanly without duplicate badge ===== */
+const _pmApplyFixBase = pmApply;
+pmApply = function(mode){
+  const m = PROD_MODES[mode];
+  if (m && $('i-main-cat')) {
+    $('i-main-cat').value = m.main;
+    if (typeof onMainCategoryChange === 'function') onMainCategoryChange();
+  }
+  const title = $('inv-modal-title');
+  if (title && title.parentElement) {
+    [...title.parentElement.querySelectorAll('span')].forEach(s => { if (s !== title) s.remove(); });
+  }
+  _pmApplyFixBase(mode);
+};
+
+/* ===== Show matching inventory product cards inside Inventory view ===== */
+const _renderInventoryBase = renderInventory;
+renderInventory = function(){
+  _renderInventoryBase();
+  const grid = $('inv-grid'); if (!grid || typeof inventory === 'undefined') return;
+  const q = ($('inv-search')?.value || '').trim().toLowerCase();
+  const catMap = { smartphone: 'স্মার্টফোন', button: 'বাটন ফোন', accessory: 'অ্যাক্সেসরিজ' };
+  const wantMain = stockCategory ? catMap[stockCategory] : null;
+  const matches = inventory.filter(p => {
+    const pm = p.mainCategory || 'অ্যাক্সেসরিজ';
+    if (wantMain && pm !== wantMain) return false;
+    if (stockBrand && p.brand !== stockBrand && !modelsOf(p).some(m => m.startsWith(stockBrand + ' '))) return false;
+    if (stockModel && p.productModel !== stockModel && !modelsOf(p).some(m => m.includes(stockModel)) && !(p.name || '').includes(stockModel)) return false;
+    if (stockPart && catOf(p) !== stockPart && !stockPart.includes(catOf(p))) return false;
+    if (stockOutOnly && (p.qty || 0) > 0) return false;
+    if (q && ![p.name, p.category, p.code, p.brand, p.series, p.productModel, ...modelsOf(p)].some(v => String(v || '').toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if (matches.length) {
+    grid.insertAdjacentHTML('beforeend', matches.map((p, i) => invCard(p, i)).join(''));
+    if (typeof drawBarcodes === 'function') drawBarcodes();
+  }
+};
+
+/* ===== Credit sale: short product line + custom option ===== */
+function ledgerFixProductList(){
+  const sel=document.getElementById('ledger-entry-item'); if(!sel) return;
+  const cur=sel.value;
+  const items=(typeof inventory!=='undefined'?inventory:[]).slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'bn'));
+  sel.innerHTML='<option value="">প্রোডাক্ট বাছুন</option>'+items.map(p=>'<option value="'+p.id+'">'+esc(p.name)+' · স্টক '+bnNum(p.qty)+'</option>').join('')+'<option value="__custom__">+ নতুন পণ্য (নিজে লিখুন)</option>';
+  sel.value=items.some(p=>p.id===cur)||cur==='__custom__'?cur:'';
+  const cn=document.getElementById('ledger-entry-custom'); if(cn) cn.style.display=sel.value==='__custom__'?'':'none';
+}
+const _ledgerRenderBase=renderLedger;
+renderLedger=function(){ _ledgerRenderBase(); ledgerFixProductList(); };
+const _ledgerOpenBase=openLedgerEntry;
+openLedgerEntry=function(){ _ledgerOpenBase(); ledgerFixProductList(); };
+</script>
+</body>
+</html>
