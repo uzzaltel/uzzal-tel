@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>বিকাশ খাতা</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:#eef2f7;font-family:"Noto Sans Bengali",system-ui,sans-serif;color:#1e293b;padding:20px}
+  .wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:320px 1fr;gap:18px;align-items:start}
+  .card{background:#fff;border:1px solid #dbe3ee;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(15,23,42,.05)}
+  .title{font-weight:700;font-size:15px;margin:0 0 12px}
+  .muted{color:#64748b;font-size:13px}
+  .input{width:100%;padding:11px 13px;border:1px solid #cbd5e1;border-radius:10px;font-size:15px;background:#fff;outline:none}
+  .input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+  .row{display:flex;gap:10px;align-items:center}
+  .grid3{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center}
+  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+  .stat{border:1px solid #dbe3ee;border-radius:12px;padding:12px;background:#fff}
+  .stat span{font-size:13px;color:#64748b}
+  .stat b{display:block;font-size:18px;margin-top:6px}
+
+  /* Customer card: smaller, contained */
+  .cust{width:100%;max-width:100%;padding:10px 12px;border-radius:12px;background:#fff4e0;border:1px solid #fdba74;overflow:hidden;margin-top:12px}
+  .cust .n{font-size:14px;font-weight:600}
+  .cust .a{font-size:12px;color:#9a3412;margin-top:3px}
+
+  /* Glossy 3D buttons */
+  .btn{position:relative;overflow:hidden;border:none;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:600;color:#fff;cursor:pointer;white-space:nowrap;
+    background:linear-gradient(180deg,#60a5fa 0%,#2563eb 100%);
+    box-shadow:0 4px 0 #1d4ed8,0 8px 16px rgba(37,99,235,.3),inset 0 1px 0 rgba(255,255,255,.6);
+    transition:transform .08s,box-shadow .08s,filter .15s}
+  .btn::before{content:"";position:absolute;left:6%;right:6%;top:4%;height:44%;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.05));pointer-events:none}
+  .btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+  .btn:active{transform:translateY(3px);box-shadow:0 1px 0 #1d4ed8,0 3px 8px rgba(37,99,235,.25),inset 0 1px 0 rgba(255,255,255,.4)}
+  .btn:disabled{background:linear-gradient(180deg,#e2e8f0,#cbd5e1);color:#94a3b8;box-shadow:0 3px 0 #b6c2d2;cursor:not-allowed;filter:none;transform:none}
+  .btn:disabled::before{display:none}
+  .btn.danger{background:linear-gradient(180deg,#f87171 0%,#dc2626 100%);box-shadow:0 4px 0 #991b1b,0 8px 16px rgba(220,38,38,.3),inset 0 1px 0 rgba(255,255,255,.5)}
+  .btn.danger:active{box-shadow:0 1px 0 #991b1b,0 3px 8px rgba(220,38,38,.25),inset 0 1px 0 rgba(255,255,255,.4)}
+  .btn.ghost{background:linear-gradient(180deg,#ffffff 0%,#e2e8f0 100%);color:#334155;box-shadow:0 3px 0 #94a3b8,0 6px 12px rgba(15,23,42,.08),inset 0 1px 0 #fff}
+  .btn.ghost::before{display:none}
+  .btn.ghost:active{box-shadow:0 1px 0 #94a3b8,0 2px 6px rgba(15,23,42,.06),inset 0 1px 0 #fff}
+  .btn.small{padding:8px 12px;font-size:13px}
+
+  /* Quick amount pads */
+  .pad{display:grid;grid-template-columns:repeat(9,1fr);gap:7px;margin-top:12px}
+  .zeros{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+  .key{flex:1;min-width:52px;padding:9px 0;border-radius:10px;border:1px solid #cbd5e1;background:linear-gradient(180deg,#ffffff,#e9eef6);box-shadow:0 2px 0 #b8c4d6,inset 0 1px 0 #fff;font-size:14px;font-weight:600;color:#1e293b;cursor:pointer;font-family:inherit}
+  .key:active{transform:translateY(2px);box-shadow:0 0 0 #b8c4d6}
+  .key.zero{background:linear-gradient(180deg,#fef9c3,#fde68a);border-color:#eab308;box-shadow:0 2px 0 #ca8a04,inset 0 1px 0 #fffbeb}
+  .key.zero:active{box-shadow:0 0 0 #ca8a04}
+  .key.clr{background:linear-gradient(180deg,#fee2e2,#fecaca);border-color:#f87171;box-shadow:0 2px 0 #dc2626,inset 0 1px 0 #fff5f5}
+
+  /* Table */
+  .bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:10px 8px;border-bottom:1px solid #eef2f7;text-align:left}
+  th.r,td.r{text-align:right}
+  td.num{font-family:ui-monospace,Menlo,monospace}
+  tr.sel{background:#eff6ff}
+  tr:hover td{background:#f8fafc}
+  tr.sel:hover td{background:#e0ecff}
+  input[type=checkbox]{width:17px;height:17px;cursor:pointer;accent-color:#2563eb}
+
+  .confirm{margin-top:12px;padding:12px 14px;border:1px dashed #fca5a5;border-radius:12px;background:#fff7f7;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .confirm label{font-size:14px;display:flex;align-items:center;gap:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- LEFT: customers -->
+  <div class="card">
+    <div class="row">
+      <input class="input" placeholder="কাস্টমারের নাম">
+      <button class="btn small">যোগ</button>
+    </div>
+    <div class="cust">
+      <div class="n">আবু হানিফ কাকা</div>
+      <div class="a">আমি পাব 900,426 টাকা</div>
+    </div>
+  </div>
+
+  <!-- RIGHT: account -->
+  <div>
+    <div class="summary">
+      <div class="stat"><span>মোট বিকাশ</span><b id="sumAll">0</b></div>
+      <div class="stat"><span>জমা</span><b>0</b></div>
+      <div class="stat"><span>মোট (আগের পাওনা সহ)</span><b>0</b></div>
+      <div class="stat"><span>আমি পাব</span><b>0</b></div>
+    </div>
+
+    <!-- Add number -->
+    <div class="card">
+      <div class="grid3">
+        <input class="input" id="numIn" placeholder="নম্বর">
+        <input class="input" id="amtIn" placeholder="টাকা" inputmode="numeric">
+        <button class="btn" id="addBtn">যোগ</button>
+      </div>
+
+      <div class="pad" id="digitPad"></div>
+      <div class="zeros" id="zeroPad"></div>
+    </div>
+
+    <!-- Numbers list -->
+    <div class="card" style="margin-top:16px">
+      <div class="bar">
+        <span class="title" style="margin:0"><span id="count">0 টি নম্বর</span></span>
+        <button class="btn ghost small" id="markAll">সবগুলো মার্ক করুন</button>
+        <span class="muted" id="selInfo">০ টি নির্বাচিত</span>
+        <span style="flex:1"></span>
+        <button class="btn ghost small" id="openDel" disabled>ডিলিট</button>
+      </div>
+
+      <div class="confirm" id="confirmBox" hidden>
+        <label><input type="checkbox" id="confirmChk"> আমি নিশ্চিত, নির্বাচিত নম্বরগুলো মুছতে চাই</label>
+        <button class="btn danger small" id="finalDel" hidden>হ্যাঁ, মুছুন</button>
+      </div>
+
+      <table style="margin-top:12px">
+        <thead>
+          <tr>
+            <th style="width:36px"></th>
+            <th>নম্বর</th>
+            <th class="r">টাকা</th>
+            <th>তারিখ</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="muted" style="margin-top:10px">মোট: <span id="total">0</span> টাকা</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const $ = id => document.getElementById(id);
+
+  let rows = [
+    { id: 1, num: "01880893695", amt: 5100,  date: "16/11/2026" },
+    { id: 2, num: "01831559017", amt: 10200, date: "16/11/2026" },
+    { id: 3, num: "01712345678", amt: 2500,  date: "15/11/2026" },
+    { id: 4, num: "01911223344", amt: 1000,  date: "15/11/2026" },
+  ];
+  let nextId = 5;
+  const sel = new Set();
+
+  const fmt = n => n.toLocaleString("en-US");
+  const today = () => {
+    const d = new Date();
+    return [d.getDate(), d.getMonth() + 1, d.getFullYear()]
+      .map((v, i) => i === 2 ? v : String(v).padStart(2, "0")).join("/");
+  };
+
+  /* ---------- Quick amount pads ---------- */
+  const digits = ["1","2","3","4","5","6","7","8","9"];
+  const zeros  = ["0","00","000","0000","00000"];
+
+  digits.forEach(d => {
+    const b = document.createElement("button");
+    b.className = "key"; b.textContent = d;
+    b.onclick = () => { $("amtIn").value += d; $("amtIn").focus(); };
+    $("digitPad").appendChild(b);
+  });
+  zeros.forEach(z => {
+    const b = document.createElement("button");
+    b.className = "key zero"; b.textContent = z;
+    b.onclick = () => {
+      if ($("amtIn").value === "") $("amtIn").value = "1";
+      $("amtIn").value += z; $("amtIn").focus();
+    };
+    $("zeroPad").appendChild(b);
+  });
+  const clr = document.createElement("button");
+  clr.className = "key clr"; clr.textContent = "মুছুন";
+  clr.onclick = () => { $("amtIn").value = ""; $("amtIn").focus(); };
+  $("zeroPad").appendChild(clr);
+
+  /* ---------- Add number ---------- */
+  $("addBtn").onclick = () => {
+    const num = $("numIn").value.trim();
+    const amt = parseInt($("amtIn").value.replace(/\D/g, ""), 10);
+    if (!num || !amt) { alert("নম্বর ও টাকা দুটোই দিন"); return; }
+    rows.unshift({ id: nextId++, num, amt, date: today() });
+    $("numIn").value = ""; $("amtIn").value = "";
+    render();
+  };
+
+  /* ---------- Selection ---------- */
+  function resetConfirm() {
+    $("confirmChk").checked = false;
+    $("finalDel").hidden = true;
+    $("confirmBox").hidden = true;
+  }
+
+  $("tbody").addEventListener("change", e => {
+    if (e.target.type !== "checkbox") return;
+    const id = Number(e.target.dataset.id);
+    e.target.checked ? sel.add(id) : sel.delete(id);
+    resetConfirm();
+    render();
+  });
+
+  $("markAll").onclick = () => {
+    if (sel.size === rows.length && rows.length) sel.clear();
+    else rows.forEach(r => sel.add(r.id));
+    resetConfirm();
+    render();
+  };
+
+  /* ---------- Two-step delete ---------- */
+  // Step 1: ডিলিট বাটন → confirm box খোলে
+  $("openDel").onclick = () => {
+    if (sel.size === 0) return;
+    $("confirmBox").hidden = !$("confirmBox").hidden;
+  };
+  // Step 2: চেকবক্সে টিক দিলে তখন চূড়ান্ত ডিলিট বাটন দেখাবে
+  $("confirmChk").onchange = e => {
+    $("finalDel").hidden = !e.target.checked;
+  };
+  // Step 3: চূড়ান্ত ডিলিট
+  $("finalDel").onclick = () => {
+    rows = rows.filter(r => !sel.has(r.id));
+    sel.clear();
+    resetConfirm();
+    render();
+  };
+
+  /* ---------- Render ---------- */
+  function render() {
+    const tbody = $("tbody");
+    tbody.innerHTML = "";
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      if (sel.has(r.id)) tr.className = "sel";
+      const checked = sel.has(r.id) ? "checked" : "";
+      tr.innerHTML = `
+        <td><input type="checkbox" data-id="${r.id}" ${checked}></td>
+        <td class="num"></td>
+        <td class="r"></td>
+        <td></td>`;
+      tr.children[1].textContent = r.num;
+      tr.children[2].textContent = fmt(r.amt);
+      tr.children[3].textContent = r.date;
+      tbody.appendChild(tr);
+    });
+
+    const total = rows.reduce((s, r) => s + r.amt, 0);
+    $("count").textContent = rows.length + " টি নম্বর";
+    $("total").textContent = fmt(total);
+    $("sumAll").textContent = fmt(total);
+    $("selInfo").textContent = sel.size + " টি নির্বাচিত";
+    $("openDel").disabled = sel.size === 0;
+    $("markAll").textContent =
+      (rows.length && sel.size === rows.length) ? "সব বাতিল করুন" : "সবগুলো মার্ক করুন";
+    $("finalDel").textContent = "হ্যাঁ, " + sel.size + " টি মুছুন";
+  }
+
+  render();
+</script>
+</body>
+</html>
