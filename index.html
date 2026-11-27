@@ -58,6 +58,9 @@ body{font-family:'Kalpurush','Nirmala UI',sans-serif;overflow-x:hidden;min-heigh
 /* Ledger page polish */
 #view-ledger .card{border:1px solid rgba(226,232,240,.85);box-shadow:0 12px 35px rgba(15,23,42,.055)}
 #view-ledger .tab{transition:transform .2s ease,background .2s ease}
+#view-ledger #reg-customer-list>div,#view-ledger #reg-staff-list>div{min-height:76px}
+#view-ledger #reg-customer-list img,#view-ledger #reg-staff-list img{width:56px;height:56px;object-fit:cover}
+#view-ledger #reg-customer-list>div>span,#view-ledger #reg-staff-list>div>span{width:56px;height:56px;font-size:20px}
 #view-ledger tbody tr{transition:background .18s ease}
 #view-ledger tbody tr:hover{background:#f8fafc}
 #view-ledger .tilt{transition:transform .25s ease,box-shadow .25s ease}
@@ -1090,22 +1093,21 @@ html body .hidden{display:none!important}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="inv-grid"></div>
   </section>
   <section id="view-ledger" class="space-y-5 hidden">
-    <div class="rounded-2xl p-3 md:p-4 text-white shadow-xl overflow-hidden relative" style="background:linear-gradient(120deg,#0f766e,#0e7490 55%,#4f46e5)">
-      <div class="absolute -right-10 -top-16 w-56 h-56 rounded-full bg-white/10 blur-2xl"></div>
-      <div class="relative flex flex-col md:flex-row md:items-center justify-between gap-2">
-        <div><p class="text-sm text-white/75">দোকানদারদের লেনদেনের হিসাব</p><h2 class="text-xl md:text-2xl font-extrabold">বাকির খাতা</h2><p class="text-sm text-white/75 mt-1">কে কী মাল নিল, কত টাকা জমা দিল, আর কত বাকি রইল—সব এক জায়গায়</p></div>
-        <div class="flex flex-wrap gap-2"><button class="px-4 py-2 rounded-xl bg-white text-teal-800 font-bold shadow" onclick="openLedgerEntry()"><i class="fa-solid fa-plus"></i> নতুন বাকি বিক্রি</button><button class="px-4 py-2 rounded-xl bg-white/15 border border-white/30 text-white font-semibold" onclick="openLedgerPayment()"><i class="fa-solid fa-money-bill-wave"></i> টাকা জমা</button></div>
-      </div>
-    </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <div class="card space-y-3">
-        <h3 class="font-bold" style="color:#0f172a"><i class="fa-solid fa-store text-teal-700"></i> দোকানদারের তালিকা</h3>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="font-bold" style="color:#0f172a"><i class="fa-solid fa-store text-teal-700"></i> দোকানদারের তালিকা</h3>
+          <div class="flex flex-wrap gap-2"><button type="button" class="sim-mini" onclick="openLedgerEntry('customer')"><i class="fa-solid fa-plus"></i> নতুন বাকি বিক্রি</button><button type="button" class="sim-mini sim-mini-ghost" onclick="openLedgerPayment('customer')"><i class="fa-solid fa-money-bill-wave"></i> টাকা জমা</button></div>
+        </div>
         <p class="text-xs text-slate-500">দোকানদারের নাম একবার যোগ করুন, তারপর বাকি বিক্রির সময় তালিকা থেকে বাছুন।</p>
         <div class="flex flex-col sm:flex-row gap-2"><input id="reg-customer-name" class="inp flex-1" placeholder="দোকানদারের নাম"/><input id="reg-customer-phone" class="inp sm:w-40" placeholder="মোবাইল (ঐচ্ছিক)"/><input id="reg-customer-photo" type="file" accept="image/*" class="inp sm:w-52 text-xs" title="দোকানদারের ছবি (ঐচ্ছিক)"/><button class="sim-mini" style="background:#059669 !important;border-color:#059669 !important;color:#ffffff !important;padding:9px 14px" onclick="addRegistryItem('customer')"><i class="fa-solid fa-plus"></i> যোগ</button></div>
         <div id="reg-customer-list" class="flex flex-col gap-2"></div>
       </div>
       <div class="card space-y-3">
-        <h3 class="font-bold" style="color:#0f172a"><i class="fa-solid fa-user-group text-indigo-700"></i> সাধারণ গ্রাহক</h3>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="font-bold" style="color:#0f172a"><i class="fa-solid fa-user-group text-indigo-700"></i> সাধারণ গ্রাহক</h3>
+          <div class="flex flex-wrap gap-2"><button type="button" class="sim-mini" onclick="openLedgerEntry('staff')"><i class="fa-solid fa-plus"></i> নতুন বাকি বিক্রি</button><button type="button" class="sim-mini sim-mini-ghost" onclick="openLedgerPayment('staff')"><i class="fa-solid fa-money-bill-wave"></i> টাকা জমা</button></div>
+        </div>
         <p class="text-xs text-slate-500">সাধারণ গ্রাহকের নাম ও মোবাইল একবার যোগ করুন, তারপর বাকি বিক্রির সময় বাছুন।</p>
         <div class="flex flex-col sm:flex-row gap-2"><input id="reg-staff-name" class="inp flex-1" placeholder="সাধারণ গ্রাহকের নাম"/><input id="reg-staff-phone" class="inp sm:w-40" placeholder="মোবাইল (ঐচ্ছিক)"/><button class="sim-mini" style="background:#059669 !important;border-color:#059669 !important;color:#ffffff !important;padding:9px 14px" onclick="addRegistryItem('staff')"><i class="fa-solid fa-plus"></i> যোগ</button></div>
         <div id="reg-staff-list" class="flex flex-col gap-2"></div>
@@ -1211,7 +1213,7 @@ html body .hidden{display:none!important}
  <div class="modal-box bg-white w-full max-w-lg rounded-3xl shadow-2xl p-5 md:p-7">
   <div class="flex justify-between items-center mb-5"><h3 class="text-xl font-extrabold">টাকা জমা গ্রহণ</h3><button type="button" style="border-radius:0 !important;box-shadow:none !important;background:#ffffff !important;color:#0f172a !important;-webkit-text-fill-color:#0f172a !important;border:1px solid #94a3b8 !important;width:34px;height:34px;line-height:1;font-size:18px;display:inline-flex;align-items:center;justify-content:center" onclick="closeModal('ledger-payment-modal')">&times;</button></div>
   <form class="space-y-3" onsubmit="saveLedgerPayment(event)">
-   <div><label class="lbl">দোকানদার</label><select id="ledger-payment-customer" class="inp" required></select></div>
+   <div><label class="lbl">দোকানদার / সাধারণ গ্রাহক</label><select id="ledger-payment-customer" class="inp" required></select></div>
    <div><label class="lbl">জমা টাকার পরিমাণ (৳)</label><input id="ledger-payment-amount" class="inp" type="number" min="0.01" step="0.01" placeholder="যেমন: 5000" required/></div>
    <div><label class="lbl">নোট (ঐচ্ছিক)</label><input id="ledger-payment-note" class="inp" placeholder="যেমন: আংশিক বিল পরিশোধ"/></div>
    <button class="w-full" style="border-radius:0 !important;box-shadow:none !important;background-image:none !important;background:#059669 !important;color:#ffffff !important;-webkit-text-fill-color:#ffffff !important;border:1px solid #059669 !important;transform:none !important;padding:10px 14px !important">জমা সংরক্ষণ করুন</button>
@@ -1233,7 +1235,7 @@ html body .hidden{display:none!important}
         <div><label class="lbl">মোবাইল নম্বর *</label><input class="inp" id="j-phone" type="tel" required="required"/></div>
         <div>
           <label class="lbl">মোবাইলের ব্র্যান্ড *</label>
-          <select class="inp" id="j-brand" onchange="fillModels()"></select>
+          <select class="inp" id="j-brand" onchange="fillServiceModels()"></select>
           <input class="inp mt-2 hidden" id="j-brand-custom" placeholder="ব্র্যান্ডের নাম লিখুন"/>
         </div>
         <div>
@@ -1520,9 +1522,23 @@ function renderJobs(){
   }).join('') : `<tr><td colspan="6" class="p-8 text-center text-slate-400">কোনো জব পাওয়া যায়নি</td></tr>`;
 }
 function fillBrands(){
-  $('j-brand').innerHTML = Object.keys(BRANDS).map(b=>`<option>${esc(b)}</option>`).join('') + `<option value="${OTHER}">➕ অন্য ব্র্যান্ড</option>`;
+  $('j-brand').innerHTML = Object.keys(BRANDS).map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join('') + `<option value="${OTHER}">➕ অন্য ব্র্যান্ড</option>`;
 }
-function onModelChange(){ $('j-model-custom').classList.toggle('hidden', $('j-model-sel').value!==CUSTOM); }
+function fillServiceModels(preserve=true){
+  const brandEl=$('j-brand'), modelEl=$('j-model-sel');
+  if(!brandEl||!modelEl)return;
+  const old=preserve?modelEl.value:'';
+  const brand=brandEl.value;
+  const customBrand=brand===OTHER;
+  $('j-brand-custom').classList.toggle('hidden',!customBrand);
+  if(!customBrand)$('j-brand-custom').value='';
+  const list=customBrand?[]:(BRANDS[brand]||[]);
+  modelEl.innerHTML=list.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('')+`<option value="${CUSTOM}">➕ অন্য মডেল লিখুন</option>`;
+  if(old&&[...modelEl.options].some(o=>o.value===old))modelEl.value=old;
+  else modelEl.value=list.length?list[0]:CUSTOM;
+  onModelChange();
+}
+function onModelChange(){ const sel=$('j-model-sel'); if(sel)$('j-model-custom').classList.toggle('hidden', sel.value!==CUSTOM); }
 function setModelFields(full){
   full = full || '';
   let brand = Object.keys(BRANDS).find(b => full.startsWith(b+' ')), model;
@@ -1531,7 +1547,7 @@ function setModelFields(full){
   const known = !!BRANDS[brand];
   $('j-brand').value = known ? brand : OTHER;
   $('j-brand-custom').value = known ? '' : brand;
-  fillModels();
+  fillServiceModels(false);
   if (known && BRANDS[brand].includes(model)) $('j-model-sel').value = model;
   else { $('j-model-sel').value = CUSTOM; $('j-model-custom').value = model; }
   onModelChange();
@@ -1580,7 +1596,7 @@ function openJobModal(id){
   $('j-advance').value = j ? j.advance : 0;
   jobPartsTmp = j ? (j.parts ? j.parts.map(x=>({...x})) : (j.partId ? [{id:j.partId, cost:j.partCost||0}] : [])) : [];
   fillParts(''); renderParts();
-  if (j) setModelFields(j.model); else { $('j-brand').value = Object.keys(BRANDS)[0]; fillModels(); }
+  if (j) setModelFields(j.model); else { $('j-brand').value = Object.keys(BRANDS)[0] || OTHER; fillServiceModels(false); }
   renderChips(); updateBill(); openModal('job-modal');
 }
 function saveJob(e){
@@ -2002,7 +2018,7 @@ function ledgerTotals(customer=''){
 }
 function renderRegistryLists(){
   const avatar=(x,type)=> x.photo
-    ? `<img src="${x.photo}" class="w-9 h-9 rounded-full object-cover border border-slate-200 flex-none" alt="">`
+    ? `<img src="${x.photo}" class="w-14 h-14 rounded-full object-cover border border-slate-200 flex-none" alt="">`
     : `<span class="w-9 h-9 rounded-full ${type==='customer'?'bg-teal-100 text-teal-700':'bg-indigo-100 text-indigo-700'} flex items-center justify-center flex-none"><i class="fa-solid fa-user"></i></span>`;
   const row=(x,type)=>{
     const due=ledgerTotals(x.name).due;
@@ -2095,9 +2111,14 @@ function renderLedger(){
     </tr>`;
   }).join(''):'<tr><td colspan="7" class="p-8 text-center text-slate-400">এখনো কোনো লেনদেন যোগ করা হয়নি</td></tr>';
 }
-function openLedgerEntry(){
-  if(!ledgerCustomers().length){showToast('আগে দোকানদারের নাম যোগ করুন',true);return;}
-  $('ledger-entry-customer').value=$('ledger-customer-filter').value||'';
+function openLedgerEntry(partyType=''){
+  const allowed=partyType==='customer'?ledgerRegistry('customer'):partyType==='staff'?ledgerRegistry('staff'):null;
+  const names=allowed?allowed.map(x=>x.name):ledgerCustomers();
+  if(!names.length){showToast(partyType==='staff'?'আগে সাধারণ গ্রাহকের নাম যোগ করুন':'আগে দোকানদারের নাম যোগ করুন',true);return;}
+  const sel=$('ledger-entry-customer');
+  sel.innerHTML='<option value="">গ্রাহক বাছুন</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  const current=$('ledger-customer-filter').value||'';
+  sel.value=names.includes(current)?current:names[0];
   $('ledger-entry-item').innerHTML='<option value="">প্রোডাক্ট নির্বাচন করুন</option>'+inventory.slice().sort((a,b)=>String(a.name).localeCompare(String(b.name),'bn')).map(p=>`<option value="${p.id}">${esc(p.name)} · স্টক ${bnNum(p.qty)} · বিক্রয় ${ledgerMoney(p.sell||0)}</option>`).join('');
   $('ledger-entry-item').value='';$('ledger-entry-qty').value=1;$('ledger-entry-price').value='';$('ledger-entry-runner').value='';
   const noProducts=!inventory.length;
@@ -2189,8 +2210,8 @@ function partyDetail(id){
     }
     return `<tr><td style="${td};font-size:12px;color:#64748b;white-space:nowrap">${d}</td><td style="${td};font-size:14px;color:#0f172a">${what}</td><td style="${td};text-align:right;font-weight:700;color:${tone};white-space:nowrap">${sign}${ledgerMoney(amt)}</td><td style="${td};text-align:right;font-weight:700;color:${run>0?'#dc2626':'#059669'};white-space:nowrap">${ledgerMoney(run)}</td></tr>`;
   }).join('');
-  const avatarHtml = p.photo ? `<img src="${p.photo}" class="w-12 h-12 object-cover border border-slate-200 flex-none" style="border-radius:0" alt="">`
-    : `<span class="w-12 h-12 ${p.type==='customer'?'bg-teal-100 text-teal-700':'bg-indigo-100 text-indigo-700'} flex items-center justify-center flex-none" style="border-radius:0"><i class="fa-solid fa-user"></i></span>`;
+  const avatarHtml = p.photo ? `<img src="${p.photo}" class="w-16 h-16 object-cover border border-slate-200 flex-none" style="border-radius:0" alt="">`
+    : `<span class="w-16 h-16 ${p.type==='customer'?'bg-teal-100 text-teal-700':'bg-indigo-100 text-indigo-700'} flex items-center justify-center flex-none" style="border-radius:0"><i class="fa-solid fa-user"></i></span>`;
   const flatW='style="border-radius:0;box-shadow:none;background:#ffffff;color:#0f172a;-webkit-text-fill-color:#0f172a;border:1px solid #94a3b8;padding:9px 14px;transform:none"';
   const flatG='style="border-radius:0;box-shadow:none;background:#059669;color:#ffffff;-webkit-text-fill-color:#ffffff;border:1px solid #059669;padding:9px 14px;transform:none"';
   const sumBox=(l,v,c)=>`<div style="border:1px solid #e2e8f0;padding:10px 12px;background:#ffffff"><p style="font-size:11px;font-weight:700;color:#64748b">${l}</p><p style="font-size:16px;font-weight:800;margin-top:4px;color:${c}">${v}</p></div>`;
@@ -2305,16 +2326,21 @@ function returnLedgerSale(id){
   const product=inventory.find(p=>p.id===sale.productId);if(product)product.qty=Number(product.qty||0)+qty;
   save(); renderInventory();renderLedger(); showToast('মাল ফেরত এন্ট্রি হয়েছে; স্টক ও দোকানদারের বাকি আপডেট হয়েছে');
 }
-function openLedgerPayment(){
-  if(!ledgerCustomers().length){showToast('আগে দোকানদারের নাম যোগ করুন',true);return;}
-  $('ledger-payment-customer').value=$('ledger-customer-filter').value||'';
+function openLedgerPayment(partyType=''){
+  const allowed=partyType==='customer'?ledgerRegistry('customer'):partyType==='staff'?ledgerRegistry('staff'):null;
+  const names=allowed?allowed.map(x=>x.name):ledgerCustomers();
+  if(!names.length){showToast(partyType==='staff'?'আগে সাধারণ গ্রাহকের নাম যোগ করুন':'আগে দোকানদারের নাম যোগ করুন',true);return;}
+  const sel=$('ledger-payment-customer');
+  sel.innerHTML='<option value="">গ্রাহক বাছুন</option>'+names.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  const current=$('ledger-customer-filter').value||'';
+  sel.value=names.includes(current)?current:names[0];
   $('ledger-payment-amount').value='';$('ledger-payment-note').value='';
   openModal('ledger-payment-modal');
 }
 function saveLedgerPayment(e){
   e.preventDefault();
   const customer=$('ledger-payment-customer').value.trim(),amount=Number($('ledger-payment-amount').value);
-  if(!customer||!Number.isFinite(amount)||amount<=0){showToast('দোকানদারের নাম ও জমার পরিমাণ ঠিকভাবে দিন',true);return;}
+  if(!customer||!Number.isFinite(amount)||amount<=0){showToast('গ্রাহকের নাম ও জমার পরিমাণ ঠিকভাবে দিন',true);return;}
   ledger.push({id:uid(),type:'payment',customer,amount,note:$('ledger-payment-note').value.trim(),createdAt:new Date().toISOString()});
   save();closeModal('ledger-payment-modal');$('ledger-customer-filter').value=customer;renderLedger();showToast('টাকা জমা সংরক্ষণ হয়েছে');
 }
@@ -3720,7 +3746,16 @@ function switchTab(name){
   activateMainView(name);
   document.querySelectorAll('nav .tab').forEach(b =>
     b.classList.toggle('on', b.dataset.tab === name));
-  renderAll();
+  try {
+    if(name==='dashboard') renderDashboard();
+    else if(name==='jobs') renderJobs();
+    else if(name==='ledger') renderLedger();
+    else if(name==='memo') renderMemo();
+    else if(name==='khata' && typeof renderKhata==='function') renderKhata();
+  } catch(err) {
+    console.error('Page render failed:',name,err);
+    showToast('এই পেজের তথ্য দেখাতে সমস্যা হয়েছে: '+(err.message||'অজানা সমস্যা'),true);
+  }
 }
 function renderAll(){
   renderDashboard(); renderJobs(); renderInventory(); renderLedger(); renderMemo();
